@@ -1,138 +1,98 @@
-import net.fabricmc.loom.task.RemapJarTask
-
 plugins {
-    id 'fabric-loom' version '0.12-SNAPSHOT'
-    id 'maven-publish'
+	id 'fabric-loom' version '0.8-SNAPSHOT'
+	id 'maven-publish'
 }
 
-loom {
-    accessWidenerPath = file("src/main/resources/lithium.accesswidener")
-    mixin.defaultRefmapName = "mixins.lithium.refmap.json"
-}
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
-apply plugin: 'fabric-loom'
-
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
-
-group = project.maven_group
+archivesBaseName = project.archives_base_name
 version = project.mod_version
-archivesBaseName = "${project.name}-mc${project.minecraft_version}"
-
-def build_release = System.getenv("BUILD_RELEASE") == "true"
-def build_id = System.getenv("BUILD_ID")
-
-if (!build_release) {
-    version += "-SNAPSHOT"
-}
-
-if (build_id != null) {
-    version += "+build.${build_id}"
-}
-
-sourceSets {
-    api {
-        java {
-            compileClasspath += main.compileClasspath
-        }
-    }
-
-    main {
-        java {
-            compileClasspath += api.output
-            runtimeClasspath += api.output
-        }
-    }
-}
+group = project.maven_group
 
 repositories {
-    allprojects {
-        repositories {
-            maven { url 'https://jitpack.io' }
+    maven {
+        url = "https://jitpack.io"
+        content {
+            includeGroup "com.github.Chocohead"
         }
     }
 }
-
-loom {
-    runs {
-        testmodServer {
-            runDir("testserver");
-            server()
-            ideConfigGenerated project.rootProject == project
-            source sourceSets.main
-        }
-        autoTestServer {
-            runDir("testserver");
-            inherit testmodServer
-            vmArg "-Dfabric.autoTest"
-        }
-    }
-}
-
 
 dependencies {
-    //to change the versions see the gradle.properties file
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+	// To change the versions see the gradle.properties file
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    modImplementation 'com.github.2No2Name:McTester:v0.3.1'
-    modImplementation 'com.github.astei:lazydfu:0.1.2'
+    modImplementation("com.github.Chocohead:Fabric-ASM:${project.fabric_asm_version}")
+    include("com.github.Chocohead:Fabric-ASM:${project.fabric_asm_version}")
+
+    modImplementation("com.moandjiezana.toml:toml4j:0.7.2")
+    include("com.moandjiezana.toml:toml4j:0.7.2")
+
+	// Fabric API. This is technically optional, but you probably want it anyway.
+
+	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
+	// You may need to force-disable transitiveness on them.
 }
 
 processResources {
-    inputs.property "version", project.version
+	inputs.property "version", project.version
 
-    filesMatching("fabric.mod.json") {
-        expand "version": project.version
-    }
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version
+	}
 }
 
-//make builds reproducible
-tasks.withType(AbstractArchiveTask) {
-    reproducibleFileOrder = true
-    preserveFileTimestamps = false
+tasks.withType(JavaCompile).configureEach {
+	// ensure that the encoding is set to UTF-8, no matter what the system default is
+	// this fixes some edge cases with special characters not displaying correctly
+	// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
+	// If Javadoc is generated, this must be specified in that task too.
+	it.options.encoding = "UTF-8"
+
+	// The Minecraft launcher currently installs Java 8 for users, so your mod probably wants to target Java 8 too
+	// JDK 9 introduced a new way of specifying this that will make sure no newer classes or methods are used.
+	// We'll use that if it's available, but otherwise we'll use the older option.
+	def targetVersion = 8
+	if (JavaVersion.current().isJava9Compatible()) {
+		 it.options.release = targetVersion
+	}
 }
 
-// ensure that the encoding is set to UTF-8, no matter what the system default is
-// this fixes some edge cases with special characters not displaying correctly
-// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-tasks.withType(JavaCompile) {
-    options.encoding = "UTF-8"
+minecraft {
+    accessWidener "src/main/resources/lithium.accesswidener"
 }
 
-// Include the license in all JAR outputs
-tasks.withType(Jar) {
-    from "LICENSE.txt"
-    from sourceSets.api.output
+java {
+	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+	// if it is present.
+	// If you remove this line, sources will not be generated.
 }
 
-task apiJar(type: Jar) {
-    classifier "api-dev"
-
-    from sourceSets.api.output
+jar {
+	from("LICENSE") {
+		rename { "${it}_${project.archivesBaseName}"}
+	}
 }
 
-task remapApiJar(type: RemapJarTask) {
-    classifier "api"
-
-    input = apiJar.archiveFile.get().asFile
-    addNestedDependencies = false
-}
-
-prepareRemapApiJar.dependsOn(apiJar)
-
+// configure the maven publication
 publishing {
-    publications {
-        main (MavenPublication) {
-            artifactId "lithium"
-            artifact(remapJar)
-        }
+	publications {
+		mavenJava(MavenPublication) {
+			// add all the jars that should be included when publishing to maven
+			artifact(remapJar) {
+				builtBy remapJar
+			}
+		}
+	}
 
-        api (MavenPublication) {
-            artifactId "lithium-api"
-            artifact(remapApiJar)
-        }
-    }
+	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+	repositories {
+		// Add repositories to publish to here.
+		// Notice: This block does NOT have the same function as the block in the top level.
+		// The repositories here will be used for publishing your artifact, not for
+		// retrieving dependencies.
+	}
 }
-build.dependsOn remapApiJar
