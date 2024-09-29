@@ -30,7 +30,7 @@ public class LithiumConfig {
 
         this.addMixinRule("ai", true);
         this.addMixinRule("ai.goal", true);
-        this.addMixinRule("ai.nearby_entity_tracking", true);
+        this.addMixinRule("ai.nearby_entity_tracking", false); // causes a rare crash
         this.addMixinRule("ai.nearby_entity_tracking.goals", true);
         this.addMixinRule("ai.pathing", true);
         this.addMixinRule("ai.poi", true);
