@@ -14,7 +14,9 @@ apply plugin: 'fabric-loom'
 
 group = project.maven_group
 version = "${project.mcsr_version}+backport-${project.lithium_version}+${project.minecraft_version}"
-archivesBaseName = "lithium-${project.minecraft_version}-backport-fabric"
+base {
+    archivesName = project.archives_base_name
+}
 
 sourceSets {
     api {
