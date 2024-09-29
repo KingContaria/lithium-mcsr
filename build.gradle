@@ -1,19 +1,16 @@
 import net.fabricmc.loom.task.RemapJarTask
 
 plugins {
-    id 'fabric-loom' version '0.5-SNAPSHOT'
+    id 'fabric-loom' version '1.7-SNAPSHOT'
     id 'maven-publish'
 }
 
-minecraft {
-    accessWidener = file("src/main/resources/lithium.accesswidener")
-    refmapName = "mixins.lithium.refmap.json"
+loom {
+    accessWidenerPath = file("src/main/resources/lithium.accesswidener")
+    mixin.defaultRefmapName = "mixins.lithium.refmap.json"
 }
 
 apply plugin: 'fabric-loom'
-
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
 
 group = project.maven_group
 version = project.mod_version
@@ -50,23 +47,16 @@ dependencies {
     //to change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
-
-    modCompile "com.google.code.findbugs:jsr305:3.0.2"
+    //modCompile "com.google.code.findbugs:jsr305:3.0.2"
 }
 
 processResources {
     inputs.property "version", project.version
 
-    from(sourceSets.main.resources.srcDirs) {
-        include "fabric.mod.json"
-
+    filesMatching("fabric.mod.json") {
         expand "version": project.version
-    }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude "fabric.mod.json"
     }
 }
 
@@ -83,17 +73,28 @@ tasks.withType(Jar) {
     from sourceSets.api.output
 }
 
-task apiJar(type: Jar) {
-    classifier "api-dev"
+tasks.register('apiJar', Jar) {
+    archiveClassifier.set "api-dev"
 
     from sourceSets.api.output
 }
 
-task remapApiJar(type: RemapJarTask, dependsOn: apiJar) {
-    classifier "api"
+tasks.register('remapApiJar', RemapJarTask) {
+    dependsOn apiJar
+    archiveClassifier.set("api")
 
     input = apiJar.archiveFile.get().asFile
     addNestedDependencies = false
+}
+
+build.dependsOn remapApiJar
+
+jar {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    from sourceSets.api.output.classesDirs
+    from sourceSets.api.output.resourcesDir
 }
 
 publishing {
