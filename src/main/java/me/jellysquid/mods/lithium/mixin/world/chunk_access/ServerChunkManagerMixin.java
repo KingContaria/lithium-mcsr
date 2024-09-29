@@ -75,7 +75,8 @@ public abstract class ServerChunkManagerMixin {
     @Overwrite
     public Chunk getChunk(int x, int z, ChunkStatus status, boolean create) {
         if (Thread.currentThread() != this.serverThread) {
-            return this.getChunkOffThread(x, z, status, create);
+            // FastReset redirects this, so getChunkOffThread was inlined to avoid having to use squared mixins
+            return CompletableFuture.supplyAsync(() -> this.getChunk(x, z, status, create), this.mainThreadExecutor).join();
         }
 
         // Store a local reference to the cached keys array in order to prevent bounds checks later
@@ -107,11 +108,6 @@ public abstract class ServerChunkManagerMixin {
         }
 
         return chunk;
-    }
-
-    @Unique
-    private Chunk getChunkOffThread(int x, int z, ChunkStatus status, boolean create) {
-        return CompletableFuture.supplyAsync(() -> this.getChunk(x, z, status, create), this.mainThreadExecutor).join();
     }
 
     /**
