@@ -28,7 +28,7 @@ import java.util.function.Supplier;
  * In vanilla, changing the collision shape of a block will notify *ALL* EntityNavigations in the world.
  * As EntityNavigations only care about these changes when they actually have a currentPath, we skip the iteration
  * of many navigations. For that optimization we need to keep track of which navigations have a path and which do not.
- *
+ * <p>
  * Another possible optimization for the future: If we can somehow find a maximum range that a navigation listens for,
  * we can partition the set by region/chunk/etc. to be able to only iterate over nearby EntityNavigations. In vanilla
  * however, that limit calculation includes the entity position, which can change by a lot very quickly in rare cases.
