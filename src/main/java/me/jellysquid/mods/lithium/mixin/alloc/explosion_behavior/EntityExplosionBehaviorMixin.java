@@ -6,7 +6,6 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.explosion.DefaultExplosionBehavior;
-import net.minecraft.world.explosion.EntityExplosionBehavior;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import org.spongepowered.asm.mixin.Final;
@@ -16,7 +15,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.Optional;
 
-@Mixin(EntityExplosionBehavior.class)
+@Mixin(targets = "net/minecraft/world/explosion/EntityExplosionBehavior")
 public abstract class EntityExplosionBehaviorMixin implements ExplosionBehavior {
     @Shadow
     @Final
