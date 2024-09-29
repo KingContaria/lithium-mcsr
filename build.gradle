@@ -16,18 +16,6 @@ group = project.maven_group
 version = project.mod_version
 archivesBaseName = "lithium-${project.minecraft_version}-backport-fabric"
 
-version += "-SNAPSHOT"
-
-def action = System.getenv("GITHUB_ACTIONS")
-
-def getDate() {
-    return new Date().format('yyyy-MM-dd')
-}
-
-if (action != null) {
-    version += "+" + getDate()
-}
-
 sourceSets {
     api {
         java {
