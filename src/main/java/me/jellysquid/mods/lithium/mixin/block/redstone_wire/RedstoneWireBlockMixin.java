@@ -1,6 +1,7 @@
 package me.jellysquid.mods.lithium.mixin.block.redstone_wire;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -53,14 +54,19 @@ import net.minecraft.world.chunk.WorldChunk;
  * @author Space Walker
  */
 @Mixin(RedstoneWireBlock.class)
-public class RedstoneWireBlockMixin extends Block {
-    
+public abstract class RedstoneWireBlockMixin extends Block {
+    @Unique
     private static final Direction[] DIRECTIONS = Direction.values();
+    @Unique
     private static final Direction[] DIRECTIONS_VERTICAL = { Direction.DOWN, Direction.UP };
+    @Unique
     private static final Direction[] DIRECTIONS_HORIZONTAL = { Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH };
     
+    @Unique
     private static final int MIN = 0;            // smallest possible power value
+    @Unique
     private static final int MAX = 15;           // largest possible power value
+    @Unique
     private static final int MAX_WIRE = MAX - 1; // largest possible power a wire can receive from another wire
     
     public RedstoneWireBlockMixin(Settings settings) {
@@ -68,11 +74,9 @@ public class RedstoneWireBlockMixin extends Block {
     }
     
     @Inject(
-            method = "getReceivedRedstonePower",
-            cancellable = true,
-            at = @At(
-                    value = "HEAD"
-            )
+            method = "method_27842",
+            at = @At("HEAD"),
+            cancellable = true
     )
     private void getReceivedPowerFaster(World world, BlockPos pos, CallbackInfoReturnable<Integer> cir) {
         cir.setReturnValue(this.getReceivedPower(world, pos));
@@ -82,6 +86,7 @@ public class RedstoneWireBlockMixin extends Block {
      * Calculate the redstone power a wire at the given location receives from the
      * blocks around it.
      */
+    @Unique
     private int getReceivedPower(World world, BlockPos pos) {
         WorldChunk chunk = world.getWorldChunk(pos);
         int power = MIN;
@@ -122,6 +127,7 @@ public class RedstoneWireBlockMixin extends Block {
      * We do these positions separately because there are no wire connections
      * vertically. This simplifies the calculations a little.
      */
+    @Unique
     private int getPowerFromVertical(World world, BlockPos pos, BlockState state, Direction toDir) {
         int power = state.getWeakRedstonePower(world, pos, toDir);
         
@@ -139,6 +145,7 @@ public class RedstoneWireBlockMixin extends Block {
     /**
      * Calculate the redstone power a wire receives from blocks next to it.
      */
+    @Unique
     private int getPowerFromSide(World world, BlockPos pos, Direction toDir, boolean checkWiresAbove) {
         WorldChunk chunk = world.getWorldChunk(pos);
         BlockState state = chunk.getBlockState(pos);
@@ -183,6 +190,7 @@ public class RedstoneWireBlockMixin extends Block {
     /**
      * Calculate the strong power a block receives from the blocks around it.
      */
+    @Unique
     private int getStrongPowerTo(World world, BlockPos pos, Direction ignore) {
         int power = MIN;
         

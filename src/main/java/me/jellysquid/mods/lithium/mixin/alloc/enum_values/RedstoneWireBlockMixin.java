@@ -3,11 +3,13 @@ package me.jellysquid.mods.lithium.mixin.alloc.enum_values;
 import net.minecraft.block.RedstoneWireBlock;
 import net.minecraft.util.math.Direction;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(RedstoneWireBlock.class)
-public class RedstoneWireBlockMixin {
+public abstract class RedstoneWireBlockMixin {
+    @Unique
     private static final Direction[] DIRECTIONS = Direction.values();
 
     @Redirect(
