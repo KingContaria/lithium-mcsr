@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.function.Predicate;
 
 @Mixin(EntityShapeContext.class)
-public class EntityShapeContextMixin {
+public abstract class EntityShapeContextMixin {
     @Mutable
     @Shadow
     @Final
@@ -25,6 +25,7 @@ public class EntityShapeContextMixin {
     @Final
     private Predicate<Fluid> field_24425;
 
+    @Unique
     private Entity lithium_entity;
 
     /**

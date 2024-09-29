@@ -33,7 +33,7 @@ public abstract class SetTagMixin<T> implements Tag<T> {
      */
     // Plugin has trouble seeing this, but it exists
     @Inject(method = "<init>(Ljava/util/Set;Ljava/lang/Class;)V", at = @At("RETURN"))
-    private void init(Set<T> set, Class<?> var2, CallbackInfo ci) {
+    private void init(CallbackInfo ci) {
         // Reference equality is safe for tag values
         // Use linear-scanning when the number of items in the tag is small
         if (this.field_25594.size() <= 3) {

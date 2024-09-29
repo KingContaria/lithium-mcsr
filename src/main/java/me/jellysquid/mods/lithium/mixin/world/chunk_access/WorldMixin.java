@@ -7,6 +7,7 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Unique;
 
 /**
  * Implement the interface members of {@link WorldView} and {@link CollisionView} directly to avoid complicated
@@ -48,6 +49,7 @@ public abstract class WorldMixin implements WorldAccess {
         return this.getChunkLithium(chunkX, chunkZ, ChunkStatus.FULL, false);
     }
 
+    @Unique
     private Chunk getChunkLithium(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
         Chunk chunk = this.getChunkManager().getChunk(chunkX, chunkZ, leastStatus, create);
 

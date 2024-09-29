@@ -6,7 +6,7 @@ import net.minecraft.util.math.Direction;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
-public class ComposterMixin {
+public abstract class ComposterMixin {
 
     @Mixin(targets = "net.minecraft.block.ComposterBlock$ComposterInventory")
     static abstract class ComposterBlockComposterInventoryMixin implements SidedInventory {

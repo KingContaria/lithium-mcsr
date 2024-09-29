@@ -25,7 +25,7 @@ public interface BlockPathingBehavior {
      * @param state The block state being examined
      * @return The path node type for the given block state
      */
-    PathNodeType getPathNodeType(BlockState state);
+    PathNodeType lithium$getPathNodeType(BlockState state);
 
     /**
      * Controls the behavior of the "neighbor" check for path finding. This is used when scanning the blocks next
@@ -41,5 +41,5 @@ public interface BlockPathingBehavior {
      * @return The path node type for the given block state when this block is being searched as a
      *         neighbor of another path node
      */
-    PathNodeType getPathNodeTypeAsNeighbor(BlockState state);
+    PathNodeType lithium$getPathNodeTypeAsNeighbor(BlockState state);
 }

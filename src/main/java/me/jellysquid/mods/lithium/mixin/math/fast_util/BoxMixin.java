@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(Box.class)
-public class BoxMixin {
+public abstract class BoxMixin {
     static {
         assert Direction.Axis.X.ordinal() == 0;
         assert Direction.Axis.Y.ordinal() == 1;
@@ -74,6 +74,5 @@ public class BoxMixin {
         }
 
         throw new IllegalArgumentException();
-
     }
 }

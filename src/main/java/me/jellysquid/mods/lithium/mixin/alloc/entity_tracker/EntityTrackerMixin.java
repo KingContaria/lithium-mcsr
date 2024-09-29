@@ -15,15 +15,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Set;
 
 @Mixin(ThreadedAnvilChunkStorage.EntityTracker.class)
-public class EntityTrackerMixin {
+public abstract class EntityTrackerMixin {
     @Mutable
     @Shadow
     @Final
     private Set<ServerPlayerEntity> playersTracking;
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void reinit(ThreadedAnvilChunkStorage parent /* non-static class parent */, Entity entity, int maxDistance,
-                        int tickInterval, boolean alwaysUpdateVelocity, CallbackInfo ci) {
+    private void reinit(CallbackInfo ci) {
         // Uses less memory, and will cache the returned iterator
         this.playersTracking = new ObjectOpenHashSet<>(this.playersTracking);
     }

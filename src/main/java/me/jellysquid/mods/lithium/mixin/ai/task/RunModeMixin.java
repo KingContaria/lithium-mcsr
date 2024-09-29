@@ -8,9 +8,9 @@ import net.minecraft.util.collection.WeightedList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
-public class RunModeMixin {
+public abstract class RunModeMixin {
     @Mixin(targets = "net/minecraft/entity/ai/brain/task/CompositeTask$RunMode$1")
-    public static class RunOneMixin {
+    public abstract static class RunOneMixin {
         /**
          * @reason Replace stream code with traditional iteration
          * @author JellySquid
@@ -28,7 +28,7 @@ public class RunModeMixin {
     }
 
     @Mixin(targets = "net/minecraft/entity/ai/brain/task/CompositeTask$RunMode$2")
-    public static class TryAllMixin {
+    public abstract static class TryAllMixin {
         /**
          * @reason Replace stream code with traditional iteration
          * @author JellySquid

@@ -16,7 +16,7 @@ import java.util.Map;
  * Replaces the backing map type with a faster collection type which uses reference equality.
  */
 @Mixin(PointOfInterestType.class)
-public class PointOfInterestTypeMixin {
+public abstract class PointOfInterestTypeMixin {
     @Mutable
     @Shadow
     @Final

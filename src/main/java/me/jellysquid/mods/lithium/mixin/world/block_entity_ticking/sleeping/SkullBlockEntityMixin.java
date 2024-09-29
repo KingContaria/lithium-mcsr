@@ -8,13 +8,15 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.SkullBlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SkullBlockEntity.class)
-public class SkullBlockEntityMixin extends BlockEntity implements SleepingBlockEntity {
+public abstract class SkullBlockEntityMixin extends BlockEntity implements SleepingBlockEntity {
 
+    @Unique
     private BlockState lastState;
 
     public SkullBlockEntityMixin(BlockEntityType<?> type) {
@@ -22,7 +24,7 @@ public class SkullBlockEntityMixin extends BlockEntity implements SleepingBlockE
     }
 
     @Override
-    public boolean canTickOnSide(boolean isClient) {
+    public boolean lithium$canTickOnSide(boolean isClient) {
         return isClient;
     }
 
@@ -31,18 +33,19 @@ public class SkullBlockEntityMixin extends BlockEntity implements SleepingBlockE
         if (this.world != null) {
             BlockState blockState = this.getCachedState();
             if (blockState != this.lastState && !(this.lastState = blockState).isOf(Blocks.DRAGON_HEAD) && !blockState.isOf(Blocks.DRAGON_WALL_HEAD)) {
-                ((BlockEntitySleepTracker) this.world).setAwake(this, false);
+                ((BlockEntitySleepTracker) this.world).lithium$setAwake(this, false);
             }
         }
     }
 
+    @Unique
     private void checkWakeUp() {
         if (this.world == null || !this.world.isClient()) {
             return;
         }
         BlockState blockState = this.getCachedState();
         if (this.world != null && (blockState.isOf(Blocks.DRAGON_HEAD) || blockState.isOf(Blocks.DRAGON_WALL_HEAD))) {
-            ((BlockEntitySleepTracker)this.world).setAwake(this, true);
+            ((BlockEntitySleepTracker)this.world).lithium$setAwake(this, true);
         }
     }
 

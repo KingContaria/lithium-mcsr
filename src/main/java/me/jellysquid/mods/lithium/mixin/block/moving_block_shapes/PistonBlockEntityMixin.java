@@ -1,5 +1,6 @@
 package me.jellysquid.mods.lithium.mixin.block.moving_block_shapes;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import me.jellysquid.mods.lithium.common.shapes.OffsetVoxelShapeCache;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -13,10 +14,10 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 
 /**
@@ -24,6 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
  */
 @Mixin(PistonBlockEntity.class)
 public abstract class PistonBlockEntityMixin {
+    @Unique
     private static final VoxelShape[] PISTON_BASE_WITH_MOVING_HEAD_SHAPES = precomputePistonBaseWithMovingHeadShapes();
 
     @Shadow
@@ -33,7 +35,6 @@ public abstract class PistonBlockEntityMixin {
     @Shadow
     private boolean source;
 
-
     /**
      * Avoid calling {@link VoxelShapes#union(VoxelShape, VoxelShape)} whenever possible - use precomputed merged piston head + base shapes and
      * cache the results for all union calls with an empty shape as first argument. (these are all other cases)
@@ -42,16 +43,14 @@ public abstract class PistonBlockEntityMixin {
             method = "getCollisionShape",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/util/math/Direction;getOffsetX()I",
-                    shift = At.Shift.BEFORE
+                    target = "Lnet/minecraft/util/math/Direction;getOffsetX()I"
             ),
-            locals = LocalCapture.CAPTURE_FAILHARD,
             cancellable = true
     )
-    private void skipVoxelShapeUnion(BlockView world, BlockPos pos, CallbackInfoReturnable<VoxelShape> cir, VoxelShape voxelShape2, BlockState blockState2, float f) {
+    private void skipVoxelShapeUnion(BlockView world, BlockPos pos, CallbackInfoReturnable<VoxelShape> cir, @Local BlockState blockState, @Local float f) {
         if (this.extending || !this.source) {
             //here voxelShape2.isEmpty() is guaranteed, vanilla code would call union() which calls simplify()
-            VoxelShape blockShape = blockState2.getCollisionShape(world, pos);
+            VoxelShape blockShape = blockState.getCollisionShape(world, pos);
 
             //we cache the simplified shapes, as the simplify() method costs a lot of CPU time and allocates several objects
             VoxelShape offsetAndSimplified = getOffsetAndSimplified(blockShape, Math.abs(f), f < 0f ? this.facing.getOpposite() : this.facing);
@@ -75,12 +74,13 @@ public abstract class PistonBlockEntityMixin {
      * @param direction  the offset direction
      * @return blockShape offset and simplified
      */
+    @Unique
     private static VoxelShape getOffsetAndSimplified(VoxelShape blockShape, float offset, Direction direction) {
-        VoxelShape offsetSimplifiedShape = ((OffsetVoxelShapeCache) blockShape).getOffsetSimplifiedShape(offset, direction);
+        VoxelShape offsetSimplifiedShape = ((OffsetVoxelShapeCache) blockShape).lithium$getOffsetSimplifiedShape(offset, direction);
         if (offsetSimplifiedShape == null) {
             //create the offset shape and store it for later use
             offsetSimplifiedShape = blockShape.offset(direction.getOffsetX() * offset, direction.getOffsetY() * offset, direction.getOffsetZ() * offset).simplify();
-            ((OffsetVoxelShapeCache) blockShape).setShape(offset, direction, offsetSimplifiedShape);
+            ((OffsetVoxelShapeCache) blockShape).lithium$setShape(offset, direction, offsetSimplifiedShape);
         }
         return offsetSimplifiedShape;
     }
@@ -90,6 +90,7 @@ public abstract class PistonBlockEntityMixin {
      *
      * @return The array of the merged VoxelShapes, indexed by {@link PistonBlockEntityMixin#getIndexForMergedShape(float, Direction)}
      */
+    @Unique
     private static VoxelShape[] precomputePistonBaseWithMovingHeadShapes() {
         float[] offsets = {0f, 0.5f, 1f};
         Direction[] directions = Direction.values();
@@ -121,6 +122,7 @@ public abstract class PistonBlockEntityMixin {
         return mergedShapes;
     }
 
+    @Unique
     private static int getIndexForMergedShape(float offset, Direction direction) {
         if (offset != 0f && offset != 0.5f && offset != 1f) {
             return -1;

@@ -23,6 +23,6 @@ public class PointOfInterestCollectors {
     }
 
     public static Collector<PointOfInterestSet> collectAllMatching(Predicate<PointOfInterestType> predicate, PointOfInterestStorage.OccupationStatus status, Collector<PointOfInterest> out) {
-        return (set) -> ((PointOfInterestSetFilterable) set).get(predicate, status, out);
+        return (set) -> ((PointOfInterestSetFilterable) set).lithium$get(predicate, status, out);
     }
 }

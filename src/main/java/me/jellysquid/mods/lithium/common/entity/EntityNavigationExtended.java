@@ -1,7 +1,7 @@
 package me.jellysquid.mods.lithium.common.entity;
 
 public interface EntityNavigationExtended {
-    void setRegisteredToWorld(boolean isRegistered);
+    void lithium$setRegisteredToWorld(boolean isRegistered);
 
-    boolean isRegisteredToWorld();
+    boolean lithium$isRegisteredToWorld();
 }

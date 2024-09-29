@@ -5,9 +5,9 @@ import net.minecraft.block.entity.DaylightDetectorBlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(DaylightDetectorBlockEntity.class)
-public class DaylightDetectorBlockEntityMixin implements SleepingBlockEntity {
+public abstract class DaylightDetectorBlockEntityMixin implements SleepingBlockEntity {
     @Override
-    public boolean canTickOnSide(boolean isClient) {
+    public boolean lithium$canTickOnSide(boolean isClient) {
         return !isClient;
     }
 }

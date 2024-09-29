@@ -8,17 +8,19 @@ import net.minecraft.world.gen.chunk.SurfaceChunkGenerator;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SurfaceChunkGenerator.class)
-public class SurfaceChunkGeneratorMixin {
+public abstract class SurfaceChunkGeneratorMixin {
     @Shadow
     @Final
     private SimplexNoiseSampler field_24777;
 
+    @Unique
     private ThreadLocal<SimplexNoiseCache> tlCache;
 
     @Inject(method = "<init>(Lnet/minecraft/world/biome/source/BiomeSource;Lnet/minecraft/world/biome/source/BiomeSource;JLnet/minecraft/world/gen/chunk/ChunkGeneratorType;)V", at = @At("RETURN"))

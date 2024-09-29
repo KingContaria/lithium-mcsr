@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CachingLayerContext.class)
-public class CachingLayerContextMixin implements CloneableContext<CachingLayerSampler> {
+public abstract class CachingLayerContextMixin implements CloneableContext<CachingLayerSampler> {
     @Shadow
     @Final
     @Mutable
@@ -31,7 +31,7 @@ public class CachingLayerContextMixin implements CloneableContext<CachingLayerSa
     private Long2IntLinkedOpenHashMap cache;
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void init(int cacheCapacity, long seed, long salt, CallbackInfo ci) {
+    private void init(CallbackInfo ci) {
         // We don't use this cache
         this.cache = null;
     }
@@ -64,7 +64,7 @@ public class CachingLayerContextMixin implements CloneableContext<CachingLayerSa
     }
 
     @Override
-    public LayerSampleContext<CachingLayerSampler> cloneContext() {
+    public LayerSampleContext<CachingLayerSampler> lithium$cloneContext() {
         CachingLayerContext context = new CachingLayerContext(0, 0, 0);
 
         CachingLayerContextMixin access = (CachingLayerContextMixin) (Object) context;

@@ -9,13 +9,13 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(PlayerChunkWatchingManager.class)
-public class PlayerChunkWatchingManagerMixin implements PlayerChunkWatchingManagerIterable {
+public abstract class PlayerChunkWatchingManagerMixin implements PlayerChunkWatchingManagerIterable {
     @Shadow
     @Final
     private Object2BooleanMap<ServerPlayerEntity> watchingPlayers;
 
     @Override
-    public Iterable<ServerPlayerEntity> getPlayers() {
+    public Iterable<ServerPlayerEntity> lithium$getPlayers() {
         return this.watchingPlayers.keySet();
     }
 }

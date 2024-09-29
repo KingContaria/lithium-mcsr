@@ -15,6 +15,7 @@ import net.minecraft.world.poi.PointOfInterestType;
 import net.minecraft.world.storage.SerializingRegionBasedStorage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Unique;
 
 import java.io.File;
 import java.util.*;
@@ -36,7 +37,7 @@ public abstract class PointOfInterestStorageMixin extends SerializingRegionBased
     @Overwrite
     public Stream<PointOfInterest> getInChunk(Predicate<PointOfInterestType> predicate, ChunkPos pos, PointOfInterestStorage.OccupationStatus status) {
         return ((RegionBasedStorageSectionAccess<PointOfInterestSet>) this)
-                .getWithinChunkColumn(pos.x, pos.z)
+                .lithium$getWithinChunkColumn(pos.x, pos.z)
                 .flatMap((set) -> set.get(predicate, status));
     }
 
@@ -91,6 +92,7 @@ public abstract class PointOfInterestStorageMixin extends SerializingRegionBased
         return this.getAllWithinCircle(predicate, pos, radius, status).size();
     }
 
+    @Unique
     private List<PointOfInterest> getAllWithinCircle(Predicate<PointOfInterestType> predicate, BlockPos pos, int radius, PointOfInterestStorage.OccupationStatus status) {
         List<PointOfInterest> points = new ArrayList<>();
 
@@ -99,6 +101,7 @@ public abstract class PointOfInterestStorageMixin extends SerializingRegionBased
         return points;
     }
 
+    @Unique
     private void collectWithinCircle(Predicate<PointOfInterestType> predicate, BlockPos pos, int radius, PointOfInterestStorage.OccupationStatus status, Collector<PointOfInterest> collector) {
         Collector<PointOfInterest> filter = PointOfInterestCollectors.collectAllWithinRadius(pos, radius, collector);
         Collector<PointOfInterestSet> consumer = PointOfInterestCollectors.collectAllMatching(predicate, status, filter);
@@ -114,7 +117,7 @@ public abstract class PointOfInterestStorageMixin extends SerializingRegionBased
 
         for (int x = minChunkX; x <= maxChunkX; x++) {
             for (int z = minChunkZ; z <= maxChunkZ; z++) {
-                if (!storage.collectWithinChunkColumn(x, z, consumer)) {
+                if (!storage.lithium$collectWithinChunkColumn(x, z, consumer)) {
                     return;
                 }
             }

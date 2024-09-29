@@ -9,6 +9,12 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(VoronoiBiomeAccessType.class)
 public abstract class VoronoiBiomeAccessTypeMixin {
+
+    @Shadow
+    private static double calcSquaredDistance(long seed, int x, int y, int z, double xFraction, double yFraction, double zFraction) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * @reason Avoid memory allocations, use faster loop
      * @author JellySquid
@@ -93,10 +99,5 @@ public abstract class VoronoiBiomeAccessTypeMixin {
     @Overwrite
     private static double distribute(long seed) {
         return (((seed >> 24) & 1023L) - 512) * 0.00087890625; // * 0.9 / 1024.0d
-    }
-
-    @Shadow
-    private static double calcSquaredDistance(long seed, int x, int y, int z, double xFraction, double yFraction, double zFraction) {
-        throw new UnsupportedOperationException();
     }
 }

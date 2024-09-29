@@ -1,5 +1,7 @@
 package me.jellysquid.mods.lithium.mixin.entity.skip_fire_check;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Box;
@@ -19,19 +21,18 @@ public abstract class EntityMixin {
     @Shadow
     protected abstract int getBurningDuration();
 
-    @Redirect(
+    @WrapOperation(
             method = "move",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/World;method_29556(Lnet/minecraft/util/math/Box;)Ljava/util/stream/Stream;"
             )
     )
-    private Stream<BlockState> skipFireTestIfResultDoesNotMatter(World world, Box box) {
+    private Stream<BlockState> skipFireTestIfResultDoesNotMatter(World world, Box box, Operation<Stream<BlockState>> original) {
         // Skip scanning the blocks around the entity touches by returning an empty stream when the result does not matter
         if (this.fireTicks > 0 || this.fireTicks == -this.getBurningDuration()) {
             return Stream.empty();
         }
-
-        return world.method_29556(box);
+        return original.call(world, box);
     }
 }

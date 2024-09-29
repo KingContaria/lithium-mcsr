@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @Mixin(Biome.class)
-public class BiomeMixin {
+public abstract class BiomeMixin {
     @Mutable
     @Shadow
     @Final
@@ -30,8 +30,8 @@ public class BiomeMixin {
      * O(1) instead of O(n) and providing another boost when lists get large. Since a simple wrapper type is used, this
      * should provide good compatibility with other mods which modify spawn entries.
      */
-    @Inject(method = "<init>", at = @At("RETURN"))
-    private void reinit(Biome.Settings settings, CallbackInfo ci) {
+    @Inject(method = "<init>*", at = @At("RETURN"))
+    private void reinit(CallbackInfo ci) {
         Map<SpawnGroup, List<Biome.SpawnEntry>> spawns = Maps.newEnumMap(SpawnGroup.class);
 
         for (Map.Entry<SpawnGroup, List<Biome.SpawnEntry>> entry : this.spawns.entrySet()) {

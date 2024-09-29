@@ -9,6 +9,7 @@ import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -17,14 +18,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.function.Predicate;
 
 @Mixin(FleeEntityGoal.class)
-public class FleeEntityGoalMixin<T extends LivingEntity> {
+public abstract class FleeEntityGoalMixin<T extends LivingEntity> {
+    @Unique
     private NearbyEntityTracker<T> tracker;
 
     @Inject(method = "<init>(Lnet/minecraft/entity/mob/PathAwareEntity;Ljava/lang/Class;Ljava/util/function/Predicate;FDDLjava/util/function/Predicate;)V", at = @At("RETURN"))
     private void init(PathAwareEntity mob, Class<T> fleeFromType, Predicate<LivingEntity> predicate, float distance, double slowSpeed, double fastSpeed, Predicate<LivingEntity> predicate2, CallbackInfo ci) {
         this.tracker = new NearbyEntityTracker<>(fleeFromType, mob, distance);
 
-        ((NearbyEntityListenerProvider) mob).getListener().addListener(this.tracker);
+        ((NearbyEntityListenerProvider) mob).lithium$getListener().addListener(this.tracker);
     }
 
     @Redirect(

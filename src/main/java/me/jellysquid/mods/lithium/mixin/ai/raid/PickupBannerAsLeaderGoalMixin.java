@@ -4,12 +4,14 @@ import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.village.raid.Raid;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(RaiderEntity.PickupBannerAsLeaderGoal.class)
-public class PickupBannerAsLeaderGoalMixin {
+public abstract class PickupBannerAsLeaderGoalMixin {
     // The call to Raid#getOminousBanner() is very expensive, so cache it and re-use it during AI ticking
+    @Unique
     private static final ItemStack CACHED_OMINOUS_BANNER = Raid.getOminousBanner();
 
     @Redirect(

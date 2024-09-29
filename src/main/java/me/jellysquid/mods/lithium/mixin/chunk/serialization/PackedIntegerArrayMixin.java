@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Shadow;
  * Extends {@link PackedIntegerArray} with a special compaction method defined in {@link CompactingPackedIntegerArray}.
  */
 @Mixin(PackedIntegerArray.class)
-public class PackedIntegerArrayMixin implements CompactingPackedIntegerArray {
+public abstract class PackedIntegerArrayMixin implements CompactingPackedIntegerArray {
     @Shadow
     @Final
     private long[] storage;
@@ -33,7 +33,7 @@ public class PackedIntegerArrayMixin implements CompactingPackedIntegerArray {
     private int field_24079;
 
     @Override
-    public <T> void compact(Palette<T> srcPalette, Palette<T> dstPalette, short[] out) {
+    public <T> void lithium$compact(Palette<T> srcPalette, Palette<T> dstPalette, short[] out) {
         if (this.size >= Short.MAX_VALUE) {
             throw new IllegalStateException("Array too large");
         }

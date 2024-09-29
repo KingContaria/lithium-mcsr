@@ -1,5 +1,6 @@
 package me.jellysquid.mods.lithium.mixin.entity.inactive_navigations;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import me.jellysquid.mods.lithium.common.entity.EntityNavigationExtended;
 import me.jellysquid.mods.lithium.common.world.ServerWorldExtended;
@@ -19,12 +20,10 @@ import net.minecraft.world.gen.Spawner;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.storage.LevelStorage;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -54,46 +53,52 @@ public abstract class ServerWorldMixin extends World implements ServerWorldExten
     @Final
     private Set<EntityNavigation> entityNavigations;
 
+    @Unique
     private ReferenceOpenHashSet<EntityNavigation> activeEntityNavigations;
+    @Unique
     private ArrayList<EntityNavigation> activeEntityNavigationUpdates;
+    @Unique
     private boolean isIteratingActiveEntityNavigations;
 
+    protected ServerWorldMixin(MutableWorldProperties mutableWorldProperties, RegistryKey<World> registryKey, RegistryKey<DimensionType> registryKey2, DimensionType dimensionType, Supplier<Profiler> profiler, boolean bl, boolean bl2, long l) {
+        super(mutableWorldProperties, registryKey, registryKey2, dimensionType, profiler, bl, bl2, l);
+    }
+
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void init(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> registryKey, RegistryKey<DimensionType> registryKey2, DimensionType dimensionType, WorldGenerationProgressListener worldGenerationProgressListener, ChunkGenerator chunkGenerator, boolean debugWorld, long l, List<Spawner> list, boolean bl, CallbackInfo ci) {
+    private void init(CallbackInfo ci) {
         this.entityNavigations = new ReferenceOpenHashSet<>(this.entityNavigations);
         this.activeEntityNavigations = new ReferenceOpenHashSet<>();
         this.activeEntityNavigationUpdates = new ArrayList<>();
         this.isIteratingActiveEntityNavigations = false;
     }
 
-    @Redirect(
+    @ModifyExpressionValue(
             method = "loadEntityUnchecked",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/entity/mob/MobEntity;getNavigation()Lnet/minecraft/entity/ai/pathing/EntityNavigation;"
             )
     )
-    private EntityNavigation startListeningOnEntityLoad(MobEntity mobEntity) {
-        EntityNavigation navigation = mobEntity.getNavigation();
-        ((EntityNavigationExtended) navigation).setRegisteredToWorld(true);
+    private EntityNavigation startListeningOnEntityLoad(EntityNavigation navigation) {
+        ((EntityNavigationExtended) navigation).lithium$setRegisteredToWorld(true);
         if (navigation.getCurrentPath() != null) {
             this.activeEntityNavigations.add(navigation);
         }
         return navigation;
     }
 
-    @Redirect(
+    @ModifyArg(
             method = "unloadEntity",
             at = @At(
                     value = "INVOKE",
                     target = "Ljava/util/Set;remove(Ljava/lang/Object;)Z"
             )
     )
-    private boolean stopListeningOnEntityUnload(Set<EntityNavigation> set, Object navigation) {
+    private Object stopListeningOnEntityUnload(Object navigation) {
         EntityNavigation entityNavigation = (EntityNavigation) navigation;
-        ((EntityNavigationExtended) entityNavigation).setRegisteredToWorld(false);
+        ((EntityNavigationExtended) entityNavigation).lithium$setRegisteredToWorld(false);
         this.activeEntityNavigations.remove(entityNavigation);
-        return set.remove(entityNavigation);
+        return navigation;
     }
 
     /**
@@ -114,18 +119,19 @@ public abstract class ServerWorldMixin extends World implements ServerWorldExten
     }
 
     @Inject(method = "updateListeners", at = @At(value = "RETURN"))
-    private void onIterationFinished(BlockPos pos, BlockState oldState, BlockState newState, int flags, CallbackInfo ci) {
+    private void onIterationFinished(CallbackInfo ci) {
         this.isIteratingActiveEntityNavigations = false;
         if (!this.activeEntityNavigationUpdates.isEmpty()) {
             this.applyActiveEntityNavigationUpdates();
         }
     }
 
+    @Unique
     private void applyActiveEntityNavigationUpdates() {
         ArrayList<EntityNavigation> entityNavigationsUpdates = this.activeEntityNavigationUpdates;
         for (int i = entityNavigationsUpdates.size() - 1; i >= 0; i--) {
             EntityNavigation entityNavigation = entityNavigationsUpdates.remove(i);
-            if (entityNavigation.getCurrentPath() != null && ((EntityNavigationExtended) entityNavigation).isRegisteredToWorld()) {
+            if (entityNavigation.getCurrentPath() != null && ((EntityNavigationExtended) entityNavigation).lithium$isRegisteredToWorld()) {
                 this.activeEntityNavigations.add(entityNavigation);
             } else {
                 this.activeEntityNavigations.remove(entityNavigation);
@@ -134,7 +140,7 @@ public abstract class ServerWorldMixin extends World implements ServerWorldExten
     }
 
     @Override
-    public void setNavigationActive(Object entityNavigation) {
+    public void lithium$setNavigationActive(Object entityNavigation) {
         EntityNavigation entityNavigation1 = (EntityNavigation) entityNavigation;
         if (!this.isIteratingActiveEntityNavigations) {
             this.activeEntityNavigations.add(entityNavigation1);
@@ -144,17 +150,13 @@ public abstract class ServerWorldMixin extends World implements ServerWorldExten
     }
 
     @Override
-    public void setNavigationInactive(Object entityNavigation) {
+    public void lithium$setNavigationInactive(Object entityNavigation) {
         EntityNavigation entityNavigation1 = (EntityNavigation) entityNavigation;
         if (!this.isIteratingActiveEntityNavigations) {
             this.activeEntityNavigations.remove(entityNavigation1);
         } else {
             this.activeEntityNavigationUpdates.add(entityNavigation1);
         }
-    }
-
-    protected ServerWorldMixin(MutableWorldProperties properties, RegistryKey<World> registryKey, RegistryKey<DimensionType> registryKey2, DimensionType dimensionType, Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long seed) {
-        super(properties, registryKey, registryKey2, dimensionType, profiler, isClient, debugWorld, seed);
     }
 
     /**
@@ -164,7 +166,7 @@ public abstract class ServerWorldMixin extends World implements ServerWorldExten
     public boolean isConsistent() {
         int i = 0;
         for (EntityNavigation entityNavigation : this.entityNavigations) {
-            if ((entityNavigation.getCurrentPath() != null && ((EntityNavigationExtended) entityNavigation).isRegisteredToWorld()) != this.activeEntityNavigations.contains(entityNavigation)) {
+            if ((entityNavigation.getCurrentPath() != null && ((EntityNavigationExtended) entityNavigation).lithium$isRegisteredToWorld()) != this.activeEntityNavigations.contains(entityNavigation)) {
                 return false;
             }
             if (entityNavigation.getCurrentPath() != null) {

@@ -17,6 +17,7 @@ import java.util.function.Supplier;
 
 @Mixin(GoalSelector.class)
 public abstract class GoalSelectorMixin {
+    @Unique
     private static final Goal.Control[] CONTROLS = Goal.Control.values();
 
     @Shadow
@@ -40,7 +41,7 @@ public abstract class GoalSelectorMixin {
      * Replace the goal set with an optimized collection type which performs better for iteration.
      */
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void reinit(Supplier<Profiler> supplier, CallbackInfo ci) {
+    private void reinit(CallbackInfo ci) {
         this.goals = new ObjectLinkedOpenHashSet<>(this.goals);
     }
 
@@ -60,6 +61,7 @@ public abstract class GoalSelectorMixin {
      * Checks the state of all goals for the given entity, starting and stopping them as necessary (because a goal
      * has been disabled, the controls are no longer available or have been reassigned, etc.)
      */
+    @Unique
     private void updateGoalStates() {
         this.profiler.get().push("goalUpdate");
 
@@ -78,6 +80,7 @@ public abstract class GoalSelectorMixin {
     /**
      * Attempts to stop all goals which are running and either shouldn't continue or no longer have available controls.
      */
+    @Unique
     private void stopGoals() {
         for (PrioritizedGoal goal : this.goals) {
             // Filter out goals which are not running
@@ -95,6 +98,7 @@ public abstract class GoalSelectorMixin {
     /**
      * Performs a scan over all currently held controls and releases them if their associated goal is stopped.
      */
+    @Unique
     private void cleanupControls() {
         for (Goal.Control control : CONTROLS) {
             PrioritizedGoal goal = this.goalsByControl.get(control);
@@ -110,6 +114,7 @@ public abstract class GoalSelectorMixin {
     /**
      * Attempts to start all goals which are not-already running, can be started, and have their controls available.
      */
+    @Unique
     private void startGoals() {
         for (PrioritizedGoal goal : this.goals) {
             // Filter out goals which are already running or can't be started
@@ -140,6 +145,7 @@ public abstract class GoalSelectorMixin {
     /**
      * Ticks all running AI goals.
      */
+    @Unique
     private void tickGoals() {
         this.profiler.get().push("goalTick");
 
@@ -156,6 +162,7 @@ public abstract class GoalSelectorMixin {
     /**
      * Returns true if any controls of the specified goal are disabled.
      */
+    @Unique
     private boolean areControlsDisabled(PrioritizedGoal goal) {
         for (Goal.Control control : goal.getControls()) {
             if (this.isControlDisabled(control)) {
@@ -170,6 +177,7 @@ public abstract class GoalSelectorMixin {
      * Returns true if all controls for the specified goal are either available (not acquired by another goal) or replaceable
      * (acquired by another goal, but eligible for replacement) and not disabled for the entity.
      */
+    @Unique
     private boolean areGoalControlsAvailable(PrioritizedGoal goal) {
         for (Goal.Control control : goal.getControls()) {
             if (this.isControlDisabled(control)) {
@@ -189,6 +197,7 @@ public abstract class GoalSelectorMixin {
     /**
      * Returns true if the specified control is disabled.
      */
+    @Unique
     private boolean isControlDisabled(Goal.Control control) {
         return this.disabledControls.contains(control);
     }
@@ -196,6 +205,7 @@ public abstract class GoalSelectorMixin {
     /**
      * Returns the goal which is currently holding the specified control, or null if no goal is.
      */
+    @Unique
     private PrioritizedGoal getGoalOccupyingControl(Goal.Control control) {
         return this.goalsByControl.get(control);
     }
@@ -203,6 +213,7 @@ public abstract class GoalSelectorMixin {
     /**
      * Changes the goal which is currently holding onto a control.
      */
+    @Unique
     private void setGoalOccupyingControl(Goal.Control control, PrioritizedGoal goal) {
         this.goalsByControl.put(control, goal);
     }

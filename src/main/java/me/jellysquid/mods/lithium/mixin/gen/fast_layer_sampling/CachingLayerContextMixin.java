@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(CachingLayerContext.class)
-public class CachingLayerContextMixin implements CachingLayerContextExtended {
+public abstract class CachingLayerContextMixin implements CachingLayerContextExtended {
     @Shadow
     private long localSeed;
 
@@ -17,7 +17,7 @@ public class CachingLayerContextMixin implements CachingLayerContextExtended {
     private long worldSeed;
 
     @Override
-    public void skipInt() {
+    public void lithium$skipInt() {
         this.localSeed = SeedMixer.mixSeed(this.localSeed, this.worldSeed);
     }
 }

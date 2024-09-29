@@ -43,7 +43,7 @@ public abstract class ScaleLayerMixin {
         }
 
         // Move `choose` into above if-statement: maintain rng parity
-        ((CachingLayerContextExtended) ctx).skipInt();
+        ((CachingLayerContextExtended) ctx).lithium$skipInt();
 
         if (iz == 0) {
             int tr = parent.sample(this.transformX(x + 1), this.transformZ(z));
@@ -51,7 +51,7 @@ public abstract class ScaleLayerMixin {
         }
 
         // Move `choose` into above if-statement: maintain rng parity
-        ((CachingLayerContextExtended) ctx).skipInt();
+        ((CachingLayerContextExtended) ctx).lithium$skipInt();
 
         int bl = parent.sample(this.transformX(x), this.transformZ(z + 1));
         int tr = parent.sample(this.transformX(x + 1), this.transformZ(z));

@@ -10,10 +10,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 
 /**
  * The piston block computes a new VoxelShape every time the shape is requested, causing significant overhead when
@@ -24,7 +21,7 @@ import org.spongepowered.asm.mixin.Shadow;
  * is fairly inconsequential to cache these all in a lookup array.
  */
 @Mixin(PistonHeadBlock.class)
-public class PistonHeadBlockMixin {
+public abstract class PistonHeadBlockMixin {
     @Shadow
     @Final
     protected static VoxelShape DOWN_HEAD_SHAPE;
@@ -101,7 +98,9 @@ public class PistonHeadBlockMixin {
     @Final
     public static BooleanProperty SHORT;
 
+    @Unique
     private static final VoxelShape[][] outlineShapes;
+    @Unique
     private static final int SHORT_IDX = 0, LONG_IDX = 1;
 
     static {
@@ -112,9 +111,9 @@ public class PistonHeadBlockMixin {
         outlineShapes[Direction.SOUTH.ordinal()] = createShape(SOUTH_HEAD_SHAPE, SHORT_SOUTH_ARM_SHAPE, SOUTH_ARM_SHAPE);
         outlineShapes[Direction.WEST.ordinal()] = createShape(WEST_HEAD_SHAPE, SHORT_WEST_ARM_SHAPE, WEST_ARM_SHAPE);
         outlineShapes[Direction.EAST.ordinal()] = createShape(EAST_HEAD_SHAPE, SHORT_EAST_ARM_SHAPE, EAST_ARM_SHAPE);
-
     }
 
+    @Unique
     private static VoxelShape[] createShape(VoxelShape head, VoxelShape shortArm, VoxelShape arm) {
         VoxelShape[] shapes = new VoxelShape[2];
         shapes[SHORT_IDX] = VoxelShapes.union(head, shortArm);

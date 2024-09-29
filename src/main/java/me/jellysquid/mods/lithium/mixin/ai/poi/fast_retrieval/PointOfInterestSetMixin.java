@@ -15,13 +15,13 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 @Mixin(PointOfInterestSet.class)
-public class PointOfInterestSetMixin implements PointOfInterestSetFilterable {
+public abstract class PointOfInterestSetMixin implements PointOfInterestSetFilterable {
     @Shadow
     @Final
     private Map<PointOfInterestType, Set<PointOfInterest>> pointsOfInterestByType;
 
     @Override
-    public boolean get(Predicate<PointOfInterestType> type, PointOfInterestStorage.OccupationStatus status, Collector<PointOfInterest> consumer) {
+    public boolean lithium$get(Predicate<PointOfInterestType> type, PointOfInterestStorage.OccupationStatus status, Collector<PointOfInterest> consumer) {
         for (Map.Entry<PointOfInterestType, Set<PointOfInterest>> entry : this.pointsOfInterestByType.entrySet()) {
             if (!type.test(entry.getKey())) {
                 continue;

@@ -6,13 +6,14 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.EnderChestBlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EnderChestBlockEntity.class)
-public class EnderChestBlockEntityMixin extends BlockEntity {
+public abstract class EnderChestBlockEntityMixin extends BlockEntity {
     @Shadow
     public int viewerCount;
     @Shadow
@@ -21,6 +22,7 @@ public class EnderChestBlockEntityMixin extends BlockEntity {
     public float lastAnimationProgress;
     @Shadow
     private int ticks;
+    @Unique
     private int lastTime;
 
     public EnderChestBlockEntityMixin(BlockEntityType<?> type) {
@@ -42,13 +44,12 @@ public class EnderChestBlockEntityMixin extends BlockEntity {
     @Inject(method = "tick",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/World;addSyncedBlockEvent(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/Block;II)V",
-                    shift = At.Shift.BEFORE
+                    target = "Lnet/minecraft/world/World;addSyncedBlockEvent(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/Block;II)V"
             )
     )
     private void checkSleep(CallbackInfo ci) {
         if (this.viewerCount == 0 && this.animationProgress == 0.0F && this.lastAnimationProgress == 0 && this.ticks != 0 && this.world != null) {
-            ((BlockEntitySleepTracker)this.world).setAwake(this, false);
+            ((BlockEntitySleepTracker)this.world).lithium$setAwake(this, false);
         }
     }
 
@@ -56,18 +57,21 @@ public class EnderChestBlockEntityMixin extends BlockEntity {
     private void checkWakeUpOnClose(CallbackInfo ci) {
         this.checkWakeUp();
     }
+
     @Inject(method = "onOpen", at = @At("RETURN"))
     private void checkWakeUpOnOpen(CallbackInfo ci) {
         this.checkWakeUp();
     }
+
     @Inject(method = "onSyncedBlockEvent", at = @At("RETURN"))
-    private void checkWakeUpOnSyncedBlockEvent(int type, int data, CallbackInfoReturnable<Boolean> cir) {
+    private void checkWakeUpOnSyncedBlockEvent(CallbackInfoReturnable<Boolean> cir) {
         this.checkWakeUp();
     }
 
+    @Unique
     private void checkWakeUp() {
         if ((this.viewerCount != 0 || this.animationProgress != 0.0F || this.lastAnimationProgress != 0) && this.world != null) {
-            ((BlockEntitySleepTracker)this.world).setAwake(this, true);
+            ((BlockEntitySleepTracker)this.world).lithium$setAwake(this, true);
         }
     }
 }

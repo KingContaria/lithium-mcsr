@@ -9,10 +9,7 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -35,15 +32,15 @@ public abstract class WorldMixin implements BlockEntitySleepTracker {
     @Final
     public List<BlockEntity> tickingBlockEntities;
 
+    @Unique
+    private MaskedTickingBlockEntityList<BlockEntity> tickingBlockEntities$lithium;
+
     @Shadow
     public abstract boolean isClient();
 
-    private MaskedTickingBlockEntityList<BlockEntity> tickingBlockEntities$lithium;
-
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void reinit(MutableWorldProperties properties, RegistryKey<World> registryKey, DimensionType dimensionType,
-                        Supplier<Profiler> supplier, boolean bl, boolean bl2, long l, CallbackInfo ci) {
-        this.tickingBlockEntities$lithium = new MaskedTickingBlockEntityList<>(this.tickingBlockEntities, blockEntity -> ((SleepingBlockEntity) blockEntity).canTickOnSide(this.isClient()));
+    private void reinit(CallbackInfo ci) {
+        this.tickingBlockEntities$lithium = new MaskedTickingBlockEntityList<>(this.tickingBlockEntities, blockEntity -> ((SleepingBlockEntity) blockEntity).lithium$canTickOnSide(this.isClient()));
         this.tickingBlockEntities = tickingBlockEntities$lithium;
     }
 
@@ -56,7 +53,7 @@ public abstract class WorldMixin implements BlockEntitySleepTracker {
     }
 
     @Override
-    public void setAwake(BlockEntity blockEntity, boolean needsTicking) {
+    public void lithium$setAwake(BlockEntity blockEntity, boolean needsTicking) {
         this.tickingBlockEntities$lithium.setEntryVisible(blockEntity, needsTicking);
     }
 }

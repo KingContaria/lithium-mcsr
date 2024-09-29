@@ -25,14 +25,14 @@ public abstract class FindInteractionTargetTaskMixin extends Task<LivingEntity> 
     private Predicate<LivingEntity> shouldRunPredicate;
 
     @Shadow
+    @Final
+    private int maxSquaredDistance;
+
+    @Shadow
     protected abstract List<LivingEntity> getVisibleMobs(LivingEntity entity);
 
     @Shadow
     protected abstract boolean test(LivingEntity entity);
-
-    @Shadow
-    @Final
-    private int maxSquaredDistance;
 
     public FindInteractionTargetTaskMixin(Map<MemoryModuleType<?>, MemoryModuleState> memories) {
         super(memories);

@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import java.util.List;
 
 @Mixin(AbstractMinecartEntity.class)
-public class AbstractMinecartEntityMixin {
+public abstract class AbstractMinecartEntityMixin {
     @Redirect(
             method = "tick",
             at = @At(

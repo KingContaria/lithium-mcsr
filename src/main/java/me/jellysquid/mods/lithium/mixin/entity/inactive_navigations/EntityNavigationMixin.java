@@ -8,6 +8,7 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -23,6 +24,7 @@ public abstract class EntityNavigationMixin implements EntityNavigationExtended 
     @Shadow
     protected Path currentPath;
 
+    @Unique
     private boolean canListenForBlocks = false;
 
     @Inject(
@@ -36,9 +38,9 @@ public abstract class EntityNavigationMixin implements EntityNavigationExtended 
     private void updateListeningState(CallbackInfo ci) {
         if (this.canListenForBlocks) {
             if (this.currentPath == null) {
-                ((ServerWorldExtended) this.world).setNavigationInactive(this);
+                ((ServerWorldExtended) this.world).lithium$setNavigationInactive(this);
             } else {
-                ((ServerWorldExtended) this.world).setNavigationActive(this);
+                ((ServerWorldExtended) this.world).lithium$setNavigationActive(this);
             }
         }
     }
@@ -47,9 +49,9 @@ public abstract class EntityNavigationMixin implements EntityNavigationExtended 
     private void updateListeningState2(Path path, double speed, CallbackInfoReturnable<Boolean> cir) {
         if (this.canListenForBlocks) {
             if (this.currentPath == null) {
-                ((ServerWorldExtended) this.world).setNavigationInactive(this);
+                ((ServerWorldExtended) this.world).lithium$setNavigationInactive(this);
             } else {
-                ((ServerWorldExtended) this.world).setNavigationActive(this);
+                ((ServerWorldExtended) this.world).lithium$setNavigationActive(this);
             }
         }
     }
@@ -57,19 +59,19 @@ public abstract class EntityNavigationMixin implements EntityNavigationExtended 
     @Inject(method = "stop", at = @At(value = "RETURN"))
     private void stopListening(CallbackInfo ci) {
         if (this.canListenForBlocks) {
-            ((ServerWorldExtended) this.world).setNavigationInactive(this);
+            ((ServerWorldExtended) this.world).lithium$setNavigationInactive(this);
         }
     }
 
     @Override
-    public void setRegisteredToWorld(boolean isRegistered) {
+    public void lithium$setRegisteredToWorld(boolean isRegistered) {
         // Drowneds are problematic. Their EntityNavigations do not register properly.
         // We make sure to not register them, when vanilla doesn't register them.
         this.canListenForBlocks = isRegistered;
     }
 
     @Override
-    public boolean isRegisteredToWorld() {
+    public boolean lithium$isRegisteredToWorld() {
         return this.canListenForBlocks;
     }
 }

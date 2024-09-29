@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @Mixin(WeightedList.class)
-public class WeightedListMixin<U> implements WeightedListIterable<U> {
+public abstract class WeightedListMixin<U> implements WeightedListIterable<U> {
     @Shadow
     @Final
     protected List<WeightedList.Entry<? extends U>> entries;

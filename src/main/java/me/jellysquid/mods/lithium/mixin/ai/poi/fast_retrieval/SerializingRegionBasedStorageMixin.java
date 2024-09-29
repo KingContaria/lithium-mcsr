@@ -11,10 +11,7 @@ import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.storage.SerializingRegionBasedStorage;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -34,25 +31,28 @@ public abstract class SerializingRegionBasedStorageMixin<R> implements RegionBas
     @Final
     private Long2ObjectMap<Optional<R>> loadedElements;
 
+    @Unique
+    private Long2ObjectOpenHashMap<BitSet> columns;
+
     @Shadow
     protected abstract Optional<R> get(long pos);
 
     @Shadow
     protected abstract void loadDataAt(ChunkPos pos);
 
-    private Long2ObjectOpenHashMap<BitSet> columns;
-
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void init(File directory, Function<Runnable, Codec<R>> function, Function<Runnable, R> function2, DataFixer dataFixer, DataFixTypes dataFixTypes, boolean sync, CallbackInfo ci) {
+    private void init(CallbackInfo ci) {
         this.columns = new Long2ObjectOpenHashMap<>();
         this.loadedElements = new ListeningLong2ObjectOpenHashMap<>(this::onEntryAdded, this::onEntryRemoved);
     }
 
+    @Unique
     private void onEntryRemoved(long key, Optional<R> value) {
         // NO-OP... vanilla never removes anything, leaking entries.
         // We might want to fix this.
     }
 
+    @Unique
     private void onEntryAdded(long key, Optional<R> value) {
         int y = ChunkSectionPos.getY(key);
 
@@ -76,7 +76,7 @@ public abstract class SerializingRegionBasedStorageMixin<R> implements RegionBas
     }
 
     @Override
-    public Stream<R> getWithinChunkColumn(int chunkX, int chunkZ) {
+    public Stream<R> lithium$getWithinChunkColumn(int chunkX, int chunkZ) {
         BitSet flags = this.getCachedColumnInfo(chunkX, chunkZ);
 
         // No items are present in this column
@@ -90,7 +90,7 @@ public abstract class SerializingRegionBasedStorageMixin<R> implements RegionBas
     }
 
     @Override
-    public boolean collectWithinChunkColumn(int chunkX, int chunkZ, Collector<R> consumer) {
+    public boolean lithium$collectWithinChunkColumn(int chunkX, int chunkZ, Collector<R> consumer) {
         BitSet flags = this.getCachedColumnInfo(chunkX, chunkZ);
 
         // No items are present in this column
@@ -109,6 +109,7 @@ public abstract class SerializingRegionBasedStorageMixin<R> implements RegionBas
         return true;
     }
 
+    @Unique
     private BitSet getCachedColumnInfo(int chunkX, int chunkZ) {
         long pos = ChunkPos.toLong(chunkX, chunkZ);
 
@@ -123,6 +124,7 @@ public abstract class SerializingRegionBasedStorageMixin<R> implements RegionBas
         return this.getColumnInfo(pos, true);
     }
 
+    @Unique
     private BitSet getColumnInfo(long pos, boolean required) {
         BitSet set = this.columns.get(pos);
 

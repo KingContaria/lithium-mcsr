@@ -6,6 +6,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -15,7 +16,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * child {@link NearbyEntityListenerProvider}s of AI tasks attached to this entity.
  */
 @Mixin(LivingEntity.class)
-public class LivingEntityMixin implements NearbyEntityListenerProvider {
+public abstract class LivingEntityMixin implements NearbyEntityListenerProvider {
+    @Unique
     private NearbyEntityListenerMulti tracker;
 
     /**
@@ -27,7 +29,7 @@ public class LivingEntityMixin implements NearbyEntityListenerProvider {
     }
 
     @Override
-    public NearbyEntityListenerMulti getListener() {
+    public NearbyEntityListenerMulti lithium$getListener() {
         return this.tracker;
     }
 }

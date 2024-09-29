@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.Slice;
 
 @Mixin(World.class)
-public class WorldMixin {
+public abstract class WorldMixin {
 
     @Redirect(
             method = "tickBlockEntities",
@@ -57,8 +57,9 @@ public class WorldMixin {
             )
     )
     private BlockEntityType<?> getNullIfSupported(BlockEntity blockEntity) {
-        return ((SupportCache) blockEntity).isSupported() ? null : BlockEntityType.BANNER;
+        return ((SupportCache) blockEntity).lithium$isSupported() ? null : BlockEntityType.BANNER;
     }
+
     @Redirect(
             method = "tickBlockEntities",
             at = @At(

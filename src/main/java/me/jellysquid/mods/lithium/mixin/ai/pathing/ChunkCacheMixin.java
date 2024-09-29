@@ -8,10 +8,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkCache;
 import net.minecraft.world.chunk.ChunkSection;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -22,7 +19,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * code.
  */
 @Mixin(ChunkCache.class)
-public class ChunkCacheMixin {
+public abstract class ChunkCacheMixin {
+    @Unique
     private static final BlockState DEFAULT_BLOCK = Blocks.AIR.getDefaultState();
 
     @Shadow
@@ -38,9 +36,11 @@ public class ChunkCacheMixin {
     protected int minZ;
 
     // A 1D view of the chunks available to this cache
+    @Unique
     private Chunk[] chunksFlat;
 
     // The x/z length of this cache
+    @Unique
     private int xLen, zLen;
 
     @Inject(method = "<init>", at = @At("RETURN"))

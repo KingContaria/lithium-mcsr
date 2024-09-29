@@ -5,9 +5,9 @@ import net.minecraft.block.entity.HopperBlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(HopperBlockEntity.class)
-public class HopperBlockEntityMixin implements SleepingBlockEntity {
+public abstract class HopperBlockEntityMixin implements SleepingBlockEntity {
     @Override
-    public boolean canTickOnSide(boolean isClient) {
+    public boolean lithium$canTickOnSide(boolean isClient) {
         return !isClient;
     }
 }

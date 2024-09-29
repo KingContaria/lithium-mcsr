@@ -11,7 +11,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.function.Supplier;
 
 @Mixin(SurfaceChunkGenerator.class)
-public class SurfaceChunkGeneratorMixin {
+public abstract class SurfaceChunkGeneratorMixin {
+    @Unique
     private int cachedSeaLevel;
 
     /**
@@ -19,6 +20,7 @@ public class SurfaceChunkGeneratorMixin {
      * This method is called for every block in the chunk so this will save a lot of registry lookups.
      *
      * @author SuperCoder79
+     * @reason Use cached sea level instead of retrieving from the registry every time.
      */
     @Overwrite
     public int getSeaLevel() {
@@ -32,8 +34,7 @@ public class SurfaceChunkGeneratorMixin {
             method = "<init>(Lnet/minecraft/world/biome/source/BiomeSource;Lnet/minecraft/world/biome/source/BiomeSource;JLnet/minecraft/world/gen/chunk/ChunkGeneratorType;)V",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/gen/chunk/ChunkGeneratorType;method_28559()Lnet/minecraft/world/gen/chunk/NoiseConfig;",
-                    shift = At.Shift.BEFORE
+                    target = "Lnet/minecraft/world/gen/chunk/ChunkGeneratorType;method_28559()Lnet/minecraft/world/gen/chunk/NoiseConfig;"
             )
     )
     private void hookConstructor(BiomeSource populationSource, BiomeSource biomeSource, long seed, ChunkGeneratorType settings, CallbackInfo ci) {

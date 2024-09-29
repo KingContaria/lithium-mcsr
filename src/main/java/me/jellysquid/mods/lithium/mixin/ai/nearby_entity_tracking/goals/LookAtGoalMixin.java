@@ -10,20 +10,22 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LookAtEntityGoal.class)
-public class LookAtGoalMixin {
+public abstract class LookAtGoalMixin {
+    @Unique
     private NearbyEntityTracker<? extends LivingEntity> tracker;
 
     @Inject(method = "<init>(Lnet/minecraft/entity/mob/MobEntity;Ljava/lang/Class;FF)V", at = @At("RETURN"))
     private void init(MobEntity mob, Class<? extends LivingEntity> targetType, float range, float chance, CallbackInfo ci) {
         this.tracker = new NearbyEntityTracker<>(targetType, mob, range);
 
-        ((NearbyEntityListenerProvider) mob).getListener().addListener(this.tracker);
+        ((NearbyEntityListenerProvider) mob).lithium$getListener().addListener(this.tracker);
     }
 
     @Redirect(

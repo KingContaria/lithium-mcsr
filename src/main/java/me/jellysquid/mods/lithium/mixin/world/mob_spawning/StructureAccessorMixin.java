@@ -11,10 +11,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.feature.StructureFeature;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 
 @Mixin(StructureAccessor.class)
 public abstract class StructureAccessorMixin {
@@ -51,6 +48,7 @@ public abstract class StructureAccessorMixin {
         return StructureStart.DEFAULT;
     }
 
+    @Unique
     private boolean anyPieceContainsPosition(StructureStart<?> structure, BlockPos blockPos) {
         for (StructurePiece piece : structure.getChildren()) {
             if (piece.getBoundingBox().contains(blockPos)) {

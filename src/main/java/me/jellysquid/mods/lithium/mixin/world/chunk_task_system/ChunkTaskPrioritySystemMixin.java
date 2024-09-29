@@ -20,7 +20,7 @@ import java.util.concurrent.Executor;
  * This replaces the queue used by the chunk job executor to a much quicker variant.
  */
 @Mixin(ChunkTaskPrioritySystem.class)
-public class ChunkTaskPrioritySystemMixin {
+public abstract class ChunkTaskPrioritySystemMixin {
     @Mutable
     @Shadow
     @Final

@@ -40,6 +40,7 @@ public abstract class VoxelShapesMixin {
     @Final
     private static final VoxelShape EMPTY;
 
+    @Unique
     private static final VoxelSet FULL_CUBE_VOXELS;
 
     // Re-initialize the global cached shapes with our specialized ones. This will happen right after all the static

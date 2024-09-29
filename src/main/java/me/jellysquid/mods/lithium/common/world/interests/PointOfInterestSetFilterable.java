@@ -8,5 +8,5 @@ import net.minecraft.world.poi.PointOfInterestType;
 import java.util.function.Predicate;
 
 public interface PointOfInterestSetFilterable {
-    boolean get(Predicate<PointOfInterestType> type, PointOfInterestStorage.OccupationStatus status, Collector<PointOfInterest> consumer);
+    boolean lithium$get(Predicate<PointOfInterestType> type, PointOfInterestStorage.OccupationStatus status, Collector<PointOfInterest> consumer);
 }

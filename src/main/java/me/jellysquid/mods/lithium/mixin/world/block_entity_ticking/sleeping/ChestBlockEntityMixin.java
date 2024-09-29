@@ -7,13 +7,14 @@ import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ChestBlockEntity.class)
-public class ChestBlockEntityMixin extends BlockEntity {
+public abstract class ChestBlockEntityMixin extends BlockEntity {
     @Shadow
     protected int viewerCount;
 
@@ -26,6 +27,7 @@ public class ChestBlockEntityMixin extends BlockEntity {
     @Shadow
     private int ticksOpen;
 
+    @Unique
     private int lastTime;
 
     public ChestBlockEntityMixin(BlockEntityType<?> type) {
@@ -47,7 +49,7 @@ public class ChestBlockEntityMixin extends BlockEntity {
     @Inject(method = "tick", at = @At("RETURN"))
     private void checkSleep(CallbackInfo ci) {
         if (this.viewerCount == 0 && this.animationAngle == 0.0F && this.lastAnimationAngle == 0 && this.ticksOpen != 0 && this.world != null) {
-            ((BlockEntitySleepTracker)this.world).setAwake(this, false);
+            ((BlockEntitySleepTracker)this.world).lithium$setAwake(this, false);
         }
     }
 
@@ -55,18 +57,21 @@ public class ChestBlockEntityMixin extends BlockEntity {
     private void checkWakeUpOnClose(PlayerEntity player, CallbackInfo ci) {
         this.checkWakeUp();
     }
+
     @Inject(method = "onOpen", at = @At("RETURN"))
     private void checkWakeUpOnOpen(PlayerEntity player, CallbackInfo ci) {
         this.checkWakeUp();
     }
+
     @Inject(method = "onSyncedBlockEvent", at = @At("RETURN"))
     private void checkWakeUpOnSyncedBlockEvent(int type, int data, CallbackInfoReturnable<Boolean> cir) {
         this.checkWakeUp();
     }
 
+    @Unique
     private void checkWakeUp() {
         if ((this.viewerCount != 0 || this.animationAngle != 0.0F || this.lastAnimationAngle != 0) && this.world != null) {
-            ((BlockEntitySleepTracker)this.world).setAwake(this, true);
+            ((BlockEntitySleepTracker)this.world).lithium$setAwake(this, true);
         }
     }
 }

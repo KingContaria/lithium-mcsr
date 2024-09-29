@@ -5,9 +5,9 @@ import net.minecraft.block.entity.EnchantingTableBlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(EnchantingTableBlockEntity.class)
-public class EnchantingTableBlockEntityMixin implements SleepingBlockEntity {
+public abstract class EnchantingTableBlockEntityMixin implements SleepingBlockEntity {
     @Override
-    public boolean canTickOnSide(boolean isClient) {
+    public boolean lithium$canTickOnSide(boolean isClient) {
         return isClient;
     }
 }

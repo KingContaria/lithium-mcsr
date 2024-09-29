@@ -8,13 +8,13 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(AbstractBlock.AbstractBlockState.class)
-public class AbstractBlockStateMixin implements BlockShapeCacheExtendedProvider {
+public abstract class AbstractBlockStateMixin implements BlockShapeCacheExtendedProvider {
     @Shadow
     protected BlockState.ShapeCache shapeCache;
 
     @SuppressWarnings("ConstantConditions")
     @Override
-    public BlockShapeCacheExtended getExtendedShapeCache() {
+    public BlockShapeCacheExtended lithium$getExtendedShapeCache() {
         return (BlockShapeCacheExtended) (Object) this.shapeCache;
     }
 }

@@ -6,22 +6,21 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.util.shape.VoxelShape;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 
 /**
  * Implement faster methods for determining penetration during collision resolution.
  */
 @Mixin(VoxelShape.class)
 public abstract class VoxelShapeMixin {
+    @Unique
     private static final double POSITIVE_EPSILON = +1.0E-7D;
+    @Unique
     private static final double NEGATIVE_EPSILON = -1.0E-7D;
 
     @Shadow
     @Final
-    protected VoxelSet voxels;
+    public VoxelSet voxels;
 
     @Shadow
     public abstract boolean isEmpty();
@@ -30,7 +29,7 @@ public abstract class VoxelShapeMixin {
     protected abstract double getPointPosition(Direction.Axis axis, int index);
 
     @Shadow
-    protected abstract DoubleList getPointPositions(Direction.Axis axis);
+    public abstract DoubleList getPointPositions(Direction.Axis axis);
 
     /**
      * @reason Use optimized implementation which delays searching for coordinates as long as possible

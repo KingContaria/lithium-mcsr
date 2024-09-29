@@ -16,12 +16,12 @@ import java.util.Map;
 @Mixin(PathNodeNavigator.class)
 public class PathNodeNavigatorMixin {
     @Inject(method = "findPathToAny(Lnet/minecraft/entity/ai/pathing/PathNode;Ljava/util/Map;FIF)Lnet/minecraft/entity/ai/pathing/Path;", at = @At("HEAD"))
-    private void preFindPathToAny(PathNode startNode, Map<TargetPathNode, BlockPos> positions, float followRange, int distance, float rangeMultiplier, CallbackInfoReturnable<Path> cir) {
+    private void preFindPathToAny(CallbackInfoReturnable<Path> cir) {
         PathNodeCache.enableChunkCache();
     }
 
     @Inject(method = "findPathToAny(Lnet/minecraft/entity/ai/pathing/PathNode;Ljava/util/Map;FIF)Lnet/minecraft/entity/ai/pathing/Path;", at = @At("RETURN"))
-    private void postFindPathToAny(PathNode startNode, Map<TargetPathNode, BlockPos> positions, float followRange, int distance, float rangeMultiplier, CallbackInfoReturnable<Path> cir) {
+    private void postFindPathToAny(CallbackInfoReturnable<Path> cir) {
         PathNodeCache.disableChunkCache();
     }
 }

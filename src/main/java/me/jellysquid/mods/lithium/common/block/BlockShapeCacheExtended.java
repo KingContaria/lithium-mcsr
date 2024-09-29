@@ -9,10 +9,10 @@ public interface BlockShapeCacheExtended {
     /**
      * Cached version of {@link net.minecraft.block.Block#sideCoversSmallSquare(WorldView, BlockPos, Direction)}
      */
-    boolean sideCoversSmallSquare(Direction facing);
+    boolean lithium$sideCoversSmallSquare(Direction facing);
 
     /**
      * Cached and directional version of {@link net.minecraft.block.Block#hasTopRim(BlockView, BlockPos)}
      */
-    boolean hasTopRim();
+    boolean lithium$hasTopRim();
 }

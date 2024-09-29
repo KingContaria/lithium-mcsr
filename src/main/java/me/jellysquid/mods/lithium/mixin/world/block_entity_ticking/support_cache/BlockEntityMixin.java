@@ -6,20 +6,23 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(BlockEntity.class)
 public abstract class BlockEntityMixin implements SupportCache {
+    @Unique
+    private BlockState supportTestState;
+    @Unique
+    private boolean supportTestResult;
+
     @Shadow
     public abstract BlockState getCachedState();
 
     @Shadow
     public abstract BlockEntityType<?> getType();
 
-    private BlockState supportTestState;
-    private boolean supportTestResult;
-
     @Override
-    public boolean isSupported() {
+    public boolean lithium$isSupported() {
         BlockState cachedState = this.getCachedState();
         if (this.supportTestState == cachedState) {
             return this.supportTestResult;

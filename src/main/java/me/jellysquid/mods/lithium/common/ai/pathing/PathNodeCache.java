@@ -55,11 +55,11 @@ public class PathNodeCache {
     }
 
     public static PathNodeType getPathNodeType(BlockState state) {
-        return ((BlockStatePathingCache) state).getPathNodeType();
+        return ((BlockStatePathingCache) state).lithium$getPathNodeType();
     }
 
     public static PathNodeType getNeighborPathNodeType(BlockState state) {
-        return ((BlockStatePathingCache) state).getNeighborPathNodeType();
+        return ((BlockStatePathingCache) state).lithium$getNeighborPathNodeType();
     }
 
     /**

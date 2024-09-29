@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.Overwrite;
  * that would not be guaranteed to catch the issue.
  */
 @Mixin(PalettedContainer.class)
-public class PalettedContainerMixin {
+public abstract class PalettedContainerMixin {
     /**
      * @reason Do not check the container's lock
      * @author JellySquid

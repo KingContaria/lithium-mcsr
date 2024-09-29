@@ -1,7 +1,7 @@
 package me.jellysquid.mods.lithium.common.world.blockentity;
 
 public interface SleepingBlockEntity {
-    default boolean canTickOnSide(boolean isClient) {
+    default boolean lithium$canTickOnSide(boolean isClient) {
         return true;
     }
 }

@@ -282,12 +282,12 @@ public class ChunkAwareBlockCollisionSweeper {
     private static boolean hasChunkSectionOversizedBlocks(Chunk chunk, int chunkY) {
         if (OVERSIZED_BLOCK_COUNTING_ENABLED) {
             ChunkSection section = chunk.getSectionArray()[chunkY];
-            return section != null && ((OversizedBlocksCounter) section).hasOversizedBlocks();
+            return section != null && ((OversizedBlocksCounter) section).lithium$hasOversizedBlocks();
         }
         return true; //like vanilla, assume that a chunk section has oversized blocks, when the section mixin isn't loaded
     }
 
     public interface OversizedBlocksCounter {
-        boolean hasOversizedBlocks();
+        boolean lithium$hasOversizedBlocks();
     }
 }

@@ -7,10 +7,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.chunk.Chunk;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -28,9 +25,11 @@ public abstract class ChunkRegionMixin implements ServerWorldAccess {
     private int width;
 
     // Array view of the chunks in the region to avoid an unnecessary de-reference
+    @Unique
     private Chunk[] chunksArr;
 
     // The starting position of this region
+    @Unique
     private int minChunkX, minChunkZ;
 
     /**
@@ -81,6 +80,7 @@ public abstract class ChunkRegionMixin implements ServerWorldAccess {
     /**
      * Use our chunk fetch function
      */
+    @Override
     public Chunk getChunk(BlockPos pos) {
         // Skip checking chunk.getStatus().isAtLeast(ChunkStatus.EMPTY) here, because it is always true
         return this.getChunk(pos.getX() >> 4, pos.getZ() >> 4);

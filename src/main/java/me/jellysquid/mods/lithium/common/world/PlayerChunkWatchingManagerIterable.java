@@ -9,5 +9,5 @@ public interface PlayerChunkWatchingManagerIterable {
      * <p>
      * TODO: Use an index to avoid iterating over all players on the server
      */
-    Iterable<ServerPlayerEntity> getPlayers();
+    Iterable<ServerPlayerEntity> lithium$getPlayers();
 }

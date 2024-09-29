@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Map;
 
 @Mixin(Task.class)
-public class TaskMixin<E extends LivingEntity> {
+public abstract class TaskMixin<E extends LivingEntity> {
     @Mutable
     @Shadow
     @Final

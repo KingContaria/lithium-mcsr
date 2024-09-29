@@ -4,6 +4,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -13,7 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * harder for the JVM to optimize. This patch simply hoists the offset fields to the Direction enum itself.
  */
 @Mixin(Direction.class)
-public class DirectionMixin {
+public abstract class DirectionMixin {
+    @Unique
     private int offsetX, offsetY, offsetZ;
 
     @Inject(method = "<init>", at = @At("RETURN"))

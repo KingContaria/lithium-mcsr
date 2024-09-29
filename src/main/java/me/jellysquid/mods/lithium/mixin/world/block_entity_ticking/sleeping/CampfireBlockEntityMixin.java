@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CampfireBlockEntity.class)
-public class CampfireBlockEntityMixin extends BlockEntity {
+public abstract class CampfireBlockEntityMixin extends BlockEntity {
     @Shadow
     @Final
     private DefaultedList<ItemStack> itemsBeingCooked;
@@ -40,11 +40,13 @@ public class CampfireBlockEntityMixin extends BlockEntity {
             this.checkSleepState();
         }
     }
+
     @Inject(method = "fromTag", at = @At("RETURN"))
     private void wakeUpAfterFromTag(CallbackInfo ci) {
         this.checkSleepState();
     }
 
+    @Unique
     private void checkSleepState() {
         if (this.world == null || this.world.isClient()) {
             return;
@@ -63,7 +65,7 @@ public class CampfireBlockEntityMixin extends BlockEntity {
 
         if (shouldTick != this.isTicking) {
             this.isTicking = shouldTick;
-            ((BlockEntitySleepTracker)this.world).setAwake(this, shouldTick);
+            ((BlockEntitySleepTracker)this.world).lithium$setAwake(this, shouldTick);
         }
     }
 

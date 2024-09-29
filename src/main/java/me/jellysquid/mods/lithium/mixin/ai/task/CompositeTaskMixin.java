@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import java.util.Set;
 
 @Mixin(CompositeTask.class)
-public class CompositeTaskMixin<E extends LivingEntity> {
+public abstract class CompositeTaskMixin<E extends LivingEntity> {
     @Shadow
     @Final
     private WeightedList<Task<? super E>> tasks;

@@ -1,6 +1,6 @@
 package me.jellysquid.mods.lithium.common.world;
 
 public interface ServerWorldExtended {
-    void setNavigationActive(Object entityNavigation);
-    void setNavigationInactive(Object entityNavigation);
+    void lithium$setNavigationActive(Object entityNavigation);
+    void lithium$setNavigationInactive(Object entityNavigation);
 }

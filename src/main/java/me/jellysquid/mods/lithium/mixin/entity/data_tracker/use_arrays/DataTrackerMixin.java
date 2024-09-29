@@ -23,6 +23,7 @@ import java.util.concurrent.locks.ReadWriteLock;
  */
 @Mixin(DataTracker.class)
 public abstract class DataTrackerMixin {
+    @Unique
     private static final int DEFAULT_ENTRY_COUNT = 10, GROW_FACTOR = 8;
 
     @Mutable
@@ -37,6 +38,7 @@ public abstract class DataTrackerMixin {
     /**
      * Mirrors the vanilla backing entries map. Each DataTracker.Entry can be accessed in this array through its ID.
      **/
+    @Unique
     private DataTracker.Entry<?>[] entriesArray = new DataTracker.Entry<?>[DEFAULT_ENTRY_COUNT];
 
     /**
@@ -44,7 +46,7 @@ public abstract class DataTrackerMixin {
      * save memory.
      */
     @Inject(method = "<init>", at = @At(value = "RETURN"))
-    private void reinit(Entity trackedEntity, CallbackInfo ci) {
+    private void reinit(CallbackInfo ci) {
         this.entries = new Int2ObjectOpenHashMap<>(this.entries);
     }
 

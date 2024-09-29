@@ -10,14 +10,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(VoxelShapes.class)
-public class VoxelShapesMixin {
+public abstract class VoxelShapesMixin {
     /**
      * Replaces the returned list pair with our own optimized type.
      */
     @Inject(
             method = "createListPair",
             at = @At(
-                    shift = At.Shift.BEFORE,
                     value = "NEW",
                     target = "net/minecraft/util/shape/SimplePairList"
             ),

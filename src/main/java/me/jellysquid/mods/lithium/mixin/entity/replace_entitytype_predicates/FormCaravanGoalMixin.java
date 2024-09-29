@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 @Mixin(FormCaravanGoal.class)
-public class FormCaravanGoalMixin {
+public abstract class FormCaravanGoalMixin {
     @Redirect(
             method = "canStart",
             at = @At(

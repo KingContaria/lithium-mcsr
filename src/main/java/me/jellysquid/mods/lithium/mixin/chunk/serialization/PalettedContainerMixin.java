@@ -9,10 +9,7 @@ import net.minecraft.util.collection.PackedIntegerArray;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.Palette;
 import net.minecraft.world.chunk.PalettedContainer;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -25,7 +22,9 @@ import java.util.function.Function;
  */
 @Mixin(PalettedContainer.class)
 public abstract class PalettedContainerMixin<T> {
+    @Unique
     private static final ThreadLocal<short[]> cachedCompactionArrays = ThreadLocal.withInitial(() -> new short[4096]);
+    @Unique
     private static final long[] EMPTY_PALETTE_DATA = new long[(4 * 4096) / 64];
 
     @Shadow
@@ -95,7 +94,7 @@ public abstract class PalettedContainerMixin<T> {
             LithiumHashPalette<T> compactedPalette = new LithiumHashPalette<>(this.idList, this.paletteSize, null, this.elementDeserializer, this.elementSerializer);
 
             short[] array = cachedCompactionArrays.get();
-            ((CompactingPackedIntegerArray) this.data).compact(this.palette, compactedPalette, array);
+            ((CompactingPackedIntegerArray) this.data).lithium$compact(this.palette, compactedPalette, array);
 
             // If the palette didn't change during compaction, do a simple copy of the data array
             if (palette != null && palette.getSize() == compactedPalette.getSize()) {
@@ -132,7 +131,7 @@ public abstract class PalettedContainerMixin<T> {
      * @author JellySquid
      */
     @Inject(method = "count", at = @At("HEAD"), cancellable = true)
-    public void count(PalettedContainer.CountConsumer<T> consumer, CallbackInfo ci) {
+    private void count(PalettedContainer.CountConsumer<T> consumer, CallbackInfo ci) {
         int len = (1 << this.paletteSize);
 
         // Do not allocate huge arrays if we're using a large palette

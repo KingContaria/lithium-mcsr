@@ -28,9 +28,6 @@ public abstract class PalettedContainerMixin<T> {
     protected PackedIntegerArray data;
 
     @Shadow
-    protected abstract void set(int int_1, T object_1);
-
-    @Shadow
     private int paletteSize;
 
     @Shadow
@@ -52,6 +49,9 @@ public abstract class PalettedContainerMixin<T> {
     @Shadow
     @Final
     private T defaultValue;
+
+    @Shadow
+    protected abstract void set(int int_1, T object_1);
 
     @Shadow
     protected abstract T get(int int_1);
@@ -83,5 +83,4 @@ public abstract class PalettedContainerMixin<T> {
             this.data = new PackedIntegerArray(this.paletteSize, 4096);
         }
     }
-
 }

@@ -10,7 +10,7 @@ import net.minecraft.world.biome.layer.util.LayerSampler;
 public final class CachedLocalLayerFactory {
     public static <R extends LayerSampler> LayerFactory<R> createInit(InitLayer layer, CloneableContext<R> context) {
         return createMemoized(() -> {
-            LayerSampleContext<R> clonedContext = context.cloneContext();
+            LayerSampleContext<R> clonedContext = context.lithium$cloneContext();
             return clonedContext.createSampler((x, z) -> {
                 clonedContext.initSeed(x, z);
                 return layer.sample(clonedContext, x, z);
@@ -20,7 +20,7 @@ public final class CachedLocalLayerFactory {
 
     public static <R extends LayerSampler> LayerFactory<R> createParented(ParentedLayer layer, CloneableContext<R> context, LayerFactory<R> parent) {
         return createMemoized(() -> {
-            LayerSampleContext<R> clonedContext = context.cloneContext();
+            LayerSampleContext<R> clonedContext = context.lithium$cloneContext();
             R parentSampler = parent.make();
 
             return clonedContext.createSampler((x, z) -> {
@@ -32,7 +32,7 @@ public final class CachedLocalLayerFactory {
 
     public static <R extends LayerSampler> LayerFactory<R> createMerging(MergingLayer layer, CloneableContext<R> context, LayerFactory<R> layer1, LayerFactory<R> layer2) {
         return createMemoized(() -> {
-            LayerSampleContext<R> clonedContext = context.cloneContext();
+            LayerSampleContext<R> clonedContext = context.lithium$cloneContext();
             R sampler1 = layer1.make();
             R sampler2 = layer2.make();
 

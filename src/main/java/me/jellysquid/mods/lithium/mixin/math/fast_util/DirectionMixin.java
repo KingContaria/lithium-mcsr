@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import java.util.Random;
 
 @Mixin(Direction.class)
-public class DirectionMixin {
+public abstract class DirectionMixin {
     @Shadow
     @Final
     private static Direction[] ALL;

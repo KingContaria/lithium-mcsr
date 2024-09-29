@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Overwrite;
  * The JVM has difficulty optimizing these functions due to the use of dynamic dispatch. They can trivially be
  * implemented as a simple switch lookup table. Switch-on-enum is avoided due to issues in Mixin hotswap.
  */
-public class AxisCycleDirectionMixin {
+public abstract class AxisCycleDirectionMixin {
     static {
         assert Direction.Axis.X.ordinal() == 0;
         assert Direction.Axis.Y.ordinal() == 1;

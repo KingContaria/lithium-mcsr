@@ -7,14 +7,17 @@ import net.minecraft.util.shape.SimpleVoxelShape;
 import net.minecraft.util.shape.VoxelSet;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SimpleVoxelShape.class)
-public class SimpleVoxelShapeMixin {
+public abstract class SimpleVoxelShapeMixin {
+    @Unique
     private static final Direction.Axis[] AXIS = Direction.Axis.values();
 
+    @Unique
     private DoubleList[] list;
 
     @Inject(method = "<init>", at = @At("RETURN"))

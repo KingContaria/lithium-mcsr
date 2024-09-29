@@ -1,20 +1,18 @@
 package me.jellysquid.mods.lithium.mixin.shapes.precompute_shape_arrays;
 
 import net.minecraft.util.shape.FractionalDoubleList;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(FractionalDoubleList.class)
-public class FractionalDoubleListMixin {
+public abstract class FractionalDoubleListMixin {
     @Shadow
     @Final
     private int sectionCount;
 
+    @Unique
     private double scale;
 
     @Inject(method = "<init>", at = @At("RETURN"))

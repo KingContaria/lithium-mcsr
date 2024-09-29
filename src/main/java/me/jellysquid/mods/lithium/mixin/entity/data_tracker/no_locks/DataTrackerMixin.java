@@ -30,7 +30,7 @@ public abstract class DataTrackerMixin {
     private ReadWriteLock lock;
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void init(Entity entity, CallbackInfo ci) {
+    private void init(CallbackInfo ci) {
         this.lock = new NullReadWriteLock();
     }
 }

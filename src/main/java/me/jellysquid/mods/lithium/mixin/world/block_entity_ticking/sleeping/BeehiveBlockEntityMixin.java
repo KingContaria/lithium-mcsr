@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(BeehiveBlockEntity.class)
-public class BeehiveBlockEntityMixin extends BlockEntity implements SleepingBlockEntity {
+public abstract class BeehiveBlockEntityMixin extends BlockEntity implements SleepingBlockEntity {
 
     @Mutable
     @Shadow
@@ -28,11 +28,6 @@ public class BeehiveBlockEntityMixin extends BlockEntity implements SleepingBloc
 
     public BeehiveBlockEntityMixin(BlockEntityType<?> type) {
         super(type);
-    }
-
-    @Override
-    public boolean canTickOnSide(boolean isClient) {
-        return !isClient;
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))
@@ -50,13 +45,18 @@ public class BeehiveBlockEntityMixin extends BlockEntity implements SleepingBloc
         }
     }
 
+    @Unique
     private void checkSleepState() {
         if (this.world != null && !this.world.isClient) {
-            if ((this.bees.size() == 0) == this.isTicking) {
+            if ((this.bees.isEmpty()) == this.isTicking) {
                 this.isTicking = !this.isTicking;
-                ((BlockEntitySleepTracker) this.world).setAwake(this, this.isTicking);
+                ((BlockEntitySleepTracker) this.world).lithium$setAwake(this, this.isTicking);
             }
         }
+    }
 
+    @Override
+    public boolean lithium$canTickOnSide(boolean isClient) {
+        return !isClient;
     }
 }

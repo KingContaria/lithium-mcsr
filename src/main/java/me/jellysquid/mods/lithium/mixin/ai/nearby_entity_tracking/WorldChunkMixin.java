@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WorldChunk.class)
-public class WorldChunkMixin {
+public abstract class WorldChunkMixin {
 
     @Shadow
     @Final
@@ -33,7 +33,7 @@ public class WorldChunkMixin {
     )
     private void onEntityAdded(Entity entity, CallbackInfo ci) {
         if (entity instanceof LivingEntity) {
-            EntityTrackerEngineProvider.getEntityTracker(this.world).onEntityAdded(entity.chunkX, entity.chunkY, entity.chunkZ, (LivingEntity) entity);
+            EntityTrackerEngineProvider.lithium$getEntityTracker(this.world).onEntityAdded(entity.chunkX, entity.chunkY, entity.chunkZ, (LivingEntity) entity);
         }
     }
 
@@ -46,7 +46,7 @@ public class WorldChunkMixin {
     )
     private void onEntityRemoved(Entity entity, int section, CallbackInfo ci) {
         if (entity instanceof LivingEntity) {
-            EntityTrackerEngineProvider.getEntityTracker(this.world).onEntityRemoved(this.pos.x, section, this.pos.z, (LivingEntity) entity);
+            EntityTrackerEngineProvider.lithium$getEntityTracker(this.world).onEntityRemoved(this.pos.x, section, this.pos.z, (LivingEntity) entity);
         }
     }
 }

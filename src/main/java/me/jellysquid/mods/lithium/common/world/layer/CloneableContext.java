@@ -4,5 +4,5 @@ import net.minecraft.world.biome.layer.util.LayerSampleContext;
 import net.minecraft.world.biome.layer.util.LayerSampler;
 
 public interface CloneableContext<R extends LayerSampler> {
-    LayerSampleContext<R> cloneContext();
+    LayerSampleContext<R> lithium$cloneContext();
 }

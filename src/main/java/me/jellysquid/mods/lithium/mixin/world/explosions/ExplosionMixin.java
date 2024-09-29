@@ -18,6 +18,7 @@ import net.minecraft.world.explosion.ExplosionBehavior;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -59,19 +60,24 @@ public abstract class ExplosionMixin {
     @Final
     private boolean createFire;
     // The cached mutable block position used during block traversal.
+    @Unique
     private final BlockPos.Mutable cachedPos = new BlockPos.Mutable();
 
     // The chunk coordinate of the most recently stepped through block.
+    @Unique
     private int prevChunkX = Integer.MIN_VALUE;
+    @Unique
     private int prevChunkZ = Integer.MIN_VALUE;
 
     // The chunk belonging to prevChunkPos.
+    @Unique
     private Chunk prevChunk;
 
     /**
      * Whether the explosion cares about air blocks. If false, air blocks do not have to be added to the set of destroyed blocks.
      * Skipping air blocks reduces the number of BlockPos allocations, shuffling and getBlockState calls in {@link Explosion#affectWorld(boolean)}
      */
+    @Unique
     private boolean explodeAirBlocks;
 
     @Inject(
@@ -96,7 +102,7 @@ public abstract class ExplosionMixin {
             method = "collectBlocksAndDamageEntities",
             at = @At(value = "INVOKE", target = "Lcom/google/common/collect/Sets;newHashSet()Ljava/util/HashSet;")
     )
-    public HashSet<BlockPos> skipNewHashSet() {
+    private HashSet<BlockPos> skipNewHashSet() {
         return null;
     }
 
@@ -104,7 +110,7 @@ public abstract class ExplosionMixin {
             method = "collectBlocksAndDamageEntities",
             constant = @Constant(intValue = 16, ordinal = 1)
     )
-    public int skipLoop(int prevValue) {
+    private int skipLoop(int prevValue) {
         return 0;
     }
 
@@ -113,7 +119,7 @@ public abstract class ExplosionMixin {
      */
     @Redirect(method = "collectBlocksAndDamageEntities",
             at = @At(value = "INVOKE", target = "Ljava/util/List;addAll(Ljava/util/Collection;)Z"))
-    public boolean collectBlocks(List<BlockPos> affectedBlocks, Collection<BlockPos> collection) {
+    private boolean collectBlocks(List<BlockPos> affectedBlocks, Collection<BlockPos> collection) {
         // Using integer encoding for the block positions provides a massive speedup and prevents us from needing to
         // allocate a block position for every step we make along each ray, eliminating essentially all the memory
         // allocations of this function. The overhead of packing block positions into integer format is negligible
@@ -156,6 +162,7 @@ public abstract class ExplosionMixin {
         return added;
     }
 
+    @Unique
     private void performRayCast(Random random, double vecX, double vecY, double vecZ, LongOpenHashSet touched) {
         double dist = Math.sqrt((vecX * vecX) + (vecY * vecY) + (vecZ * vecZ));
 
@@ -218,6 +225,7 @@ public abstract class ExplosionMixin {
      * @param blockZ   The z-coordinate of the block the ray is inside of
      * @return The resistance of the current block space to the ray
      */
+    @Unique
     private float traverseBlock(float strength, int blockX, int blockY, int blockZ, LongOpenHashSet touched) {
         BlockPos pos = this.cachedPos.set(blockX, blockY, blockZ);
 
@@ -293,5 +301,4 @@ public abstract class ExplosionMixin {
 
         return totalResistance;
     }
-
 }

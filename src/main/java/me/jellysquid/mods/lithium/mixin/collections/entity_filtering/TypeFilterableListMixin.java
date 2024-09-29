@@ -1,10 +1,7 @@
 package me.jellysquid.mods.lithium.mixin.collections.entity_filtering;
 
 import net.minecraft.util.collection.TypeFilterableList;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 
 import java.util.*;
 
@@ -12,7 +9,7 @@ import java.util.*;
  * Patches {@link TypeFilterableList} to improve performance when entities are being queried in the world.
  */
 @Mixin(TypeFilterableList.class)
-public class TypeFilterableListMixin<T> {
+public abstract class TypeFilterableListMixin<T> {
     @Shadow
     @Final
     private Class<T> elementType;
@@ -42,6 +39,7 @@ public class TypeFilterableListMixin<T> {
         return (Collection<S>) Collections.unmodifiableCollection(collection);
     }
 
+    @Unique
     private <S> Collection<T> createAllOfType(Class<S> type) {
         if (!this.elementType.isAssignableFrom(type)) {
             throw new IllegalArgumentException("Don't know how to search for " + type);

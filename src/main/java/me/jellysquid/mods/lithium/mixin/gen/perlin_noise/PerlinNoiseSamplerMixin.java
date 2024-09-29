@@ -3,10 +3,7 @@ package me.jellysquid.mods.lithium.mixin.gen.perlin_noise;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.PerlinNoiseSampler;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -14,8 +11,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Random;
 
 @Mixin(PerlinNoiseSampler.class)
-public class PerlinNoiseSamplerMixin {
+public abstract class PerlinNoiseSamplerMixin {
+    @Unique
     private static final int GRADIENT_STRIDE = 4;
+    @Unique
     private static final int GRADIENT_STRIDE_SH = 2;
 
     @Shadow
@@ -34,6 +33,7 @@ public class PerlinNoiseSamplerMixin {
     @Final
     public double originZ;
 
+    @Unique
     private final byte[] gradientTable = new byte[256 * GRADIENT_STRIDE];
 
     @Inject(method = "<init>", at = @At("RETURN"))

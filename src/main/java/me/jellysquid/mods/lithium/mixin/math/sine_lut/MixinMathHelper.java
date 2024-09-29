@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(MathHelper.class)
-public class MixinMathHelper {
+public abstract class MixinMathHelper {
     /**
      * @author jellysquid3
      * @reason use an optimized implementation

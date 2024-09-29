@@ -1,5 +1,7 @@
 package me.jellysquid.mods.lithium.mixin.gen.features;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -22,13 +24,13 @@ import org.spongepowered.asm.mixin.injection.Slice;
  * @author TelepathicGrunt
  */
 @Mixin(StructureFeature.class)
-public class StructureFeatureMixin {
+public abstract class StructureFeatureMixin {
 
     /**
      * @reason Return null chunk if biome doesn't match structure
      * @author MrGrim
      */
-    @Redirect(
+    @WrapOperation(
             method = "locateStructure",
             slice = @Slice(
                     from = @At(value = "FIELD", opcode = Opcodes.GETSTATIC, target = "Lnet/minecraft/world/chunk/ChunkStatus;STRUCTURE_STARTS:Lnet/minecraft/world/chunk/ChunkStatus;", ordinal = 0),
@@ -40,14 +42,13 @@ public class StructureFeatureMixin {
                     ordinal = 0
             )
     )
-    private Chunk biomeConditionalGetChunk(WorldView worldView, int x, int z, ChunkStatus status) {
+    private Chunk biomeConditionalGetChunk(WorldView worldView, int x, int z, ChunkStatus status, Operation<Chunk> original) {
         // Magic numbers << 2) + 2 and biomeY = 0 taken from ChunkGenerator.setStructureStarts
         //noinspection rawtypes
         if (worldView.getBiomeForNoiseGen((x << 2) + 2, 0, (z << 2) + 2).hasStructureFeature((StructureFeature) (Object) this)) {
-            return worldView.getChunk(x, z, status);
-        } else {
-            return null;
+            return original.call(worldView, x, z, status);
         }
+        return null;
     }
 
     /**
@@ -55,7 +56,7 @@ public class StructureFeatureMixin {
      * Send a new (0,0) ChunkPos if so. It won't be used anyway.
      * @author MrGrim
      */
-    @Redirect(
+    @WrapOperation(
             method = "locateStructure",
             slice = @Slice(
                     from = @At(value = "INVOKE", target = "Lnet/minecraft/world/WorldView;getChunk(IILnet/minecraft/world/chunk/ChunkStatus;)Lnet/minecraft/world/chunk/Chunk;", ordinal = 0),
@@ -66,8 +67,8 @@ public class StructureFeatureMixin {
                     target = "Lnet/minecraft/world/chunk/Chunk;getPos()Lnet/minecraft/util/math/ChunkPos;", ordinal = 0
             )
     )
-    private ChunkPos checkForNull(Chunk chunk) {
-        return chunk == null ? new ChunkPos(0, 0) : chunk.getPos();
+    private ChunkPos checkForNull(Chunk chunk, Operation<ChunkPos> original) {
+        return chunk == null ? new ChunkPos(0, 0) : original.call(chunk);
     }
 
     /**
@@ -75,7 +76,7 @@ public class StructureFeatureMixin {
      * allowing the search to continue.
      * @author MrGrim
      */
-    @Redirect(
+    @WrapOperation(
             method = "locateStructure",
             slice = @Slice(
                     from = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/ChunkSectionPos;from(Lnet/minecraft/util/math/ChunkPos;I)Lnet/minecraft/util/math/ChunkSectionPos;", ordinal = 0),
@@ -87,7 +88,7 @@ public class StructureFeatureMixin {
                     ordinal = 0
             )
     )
-    private StructureStart<?> checkChunkBeforeGetStructureStart(StructureAccessor structureAccessor, ChunkSectionPos sectionPos, StructureFeature<?> thisStructure, StructureHolder chunk) {
-        return chunk == null ? null : structureAccessor.getStructureStart(sectionPos, thisStructure, chunk);
+    private StructureStart<?> checkChunkBeforeGetStructureStart(StructureAccessor structureAccessor, ChunkSectionPos sectionPos, StructureFeature<?> thisStructure, StructureHolder chunk, Operation<StructureStart<?>> original) {
+        return chunk == null ? null : original.call(structureAccessor, sectionPos, thisStructure, chunk);
     }
 }

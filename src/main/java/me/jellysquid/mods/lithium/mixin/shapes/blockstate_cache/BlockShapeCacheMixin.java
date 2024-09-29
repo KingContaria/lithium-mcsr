@@ -11,6 +11,7 @@ import net.minecraft.world.EmptyBlockView;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -21,7 +22,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * issue tracker, which contains some additional information: https://bugs.mojang.com/browse/MC-174568
  */
 @Mixin(BlockState.ShapeCache.class)
-public class BlockShapeCacheMixin implements BlockShapeCacheExtended {
+public abstract class BlockShapeCacheMixin implements BlockShapeCacheExtended {
+    @Unique
     private static final Direction[] DIRECTIONS = Direction.values();
 
     @Shadow
@@ -32,10 +34,12 @@ public class BlockShapeCacheMixin implements BlockShapeCacheExtended {
     @Final
     protected boolean isFullCube;
 
+    @Unique
     private byte sideCoversSmallSquare;
+    @Unique
     private boolean hasTopRim;
 
-    @Inject(method = "<init>", at = @At("RETURN"))
+    @Inject(method = "<init>*", at = @At("RETURN"))
     private void init(BlockState state, CallbackInfo ci) {
         // [VanillaCopy] Leaf blocks are a special case which can never support other blocks
         // This is exactly how vanilla itself implements the check.
@@ -44,6 +48,7 @@ public class BlockShapeCacheMixin implements BlockShapeCacheExtended {
         }
     }
 
+    @Unique
     private void initSidedProperties(BlockState state) {
         VoxelShape shape = state.getSidesShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
 
@@ -58,18 +63,18 @@ public class BlockShapeCacheMixin implements BlockShapeCacheExtended {
             }
 
             if (this.solidFullSquare[side.ordinal()] || BlockShapeHelper.sideCoversSquare(shape.getFace(side), BlockShapeHelper.SOLID_SMALL_SQUARE_SHAPE)) {
-                this.sideCoversSmallSquare |= (1 << side.ordinal());
+                this.sideCoversSmallSquare |= (byte) (1 << side.ordinal());
             }
         }
     }
 
     @Override
-    public boolean sideCoversSmallSquare(Direction facing) {
+    public boolean lithium$sideCoversSmallSquare(Direction facing) {
         return (this.sideCoversSmallSquare & (1 << facing.ordinal())) != 0;
     }
 
     @Override
-    public boolean hasTopRim() {
+    public boolean lithium$hasTopRim() {
         return this.hasTopRim;
     }
 }

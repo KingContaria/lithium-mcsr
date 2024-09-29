@@ -7,6 +7,7 @@ import net.minecraft.fluid.FluidState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -27,12 +28,14 @@ public abstract class AbstractBlockStateMixin {
      * The fluid state is constant for any given block state, so it can be safely cached. This notably improves performance
      * when scanning for fluid blocks.
      */
+    @Unique
     private FluidState fluidStateCache = null;
 
     /**
      * Indicates whether the current block state can be ticked. Since this value is always the same for any given block state
      * and random block ticking is a frequent process during chunk ticking, in theory this is a very good change.
      */
+    @Unique
     private boolean isTickable;
 
     /**

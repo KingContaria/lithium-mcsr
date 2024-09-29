@@ -10,11 +10,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(VoxelShapes.class)
-public class VoxelShapesMixin {
+public abstract class VoxelShapesMixin {
     @Inject(
             method = "matchesAnywhere(Lnet/minecraft/util/shape/VoxelShape;Lnet/minecraft/util/shape/VoxelShape;Lnet/minecraft/util/function/BooleanBiFunction;)Z",
             at = @At(
-                    shift = At.Shift.BEFORE,
                     value = "INVOKE",
                     target = "Lnet/minecraft/util/shape/VoxelShape;getPointPositions(Lnet/minecraft/util/math/Direction$Axis;)Lit/unimi/dsi/fastutil/doubles/DoubleList;",
                     ordinal = 0

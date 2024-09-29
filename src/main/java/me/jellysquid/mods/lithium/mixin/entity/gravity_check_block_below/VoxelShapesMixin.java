@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import java.util.stream.Stream;
 
 @Mixin(VoxelShapes.class)
-public class VoxelShapesMixin {
+public abstract class VoxelShapesMixin {
     /**
      * Check the block below the entity first, as it is the block that is most likely going to cancel the movement from
      * gravity.
@@ -27,8 +27,7 @@ public class VoxelShapesMixin {
                     target = "Lnet/minecraft/util/math/AxisCycleDirection;opposite()Lnet/minecraft/util/math/AxisCycleDirection;",
                     ordinal = 0
             ),
-            cancellable = true,
-            locals = LocalCapture.NO_CAPTURE
+            cancellable = true
     )
     private static void checkBelowFeet(Box box, WorldView world, double movement, ShapeContext context, AxisCycleDirection direction, Stream<VoxelShape> shapes, CallbackInfoReturnable<Double> cir) {
         // [VanillaCopy] calculate axis of movement like vanilla: direction.opposite().cycle(...)

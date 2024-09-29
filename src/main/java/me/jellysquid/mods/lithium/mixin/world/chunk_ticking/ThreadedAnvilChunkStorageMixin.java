@@ -44,7 +44,7 @@ public abstract class ThreadedAnvilChunkStorageMixin {
             return true;
         }
 
-        for (ServerPlayerEntity player : ((PlayerChunkWatchingManagerIterable) (Object) this.playerChunkWatchingManager).getPlayers()) {
+        for (ServerPlayerEntity player : ((PlayerChunkWatchingManagerIterable) (Object) this.playerChunkWatchingManager).lithium$getPlayers()) {
             // [VanillaCopy] Only non-spectator players within 128 blocks of the chunk can enable mob spawning
             if (!player.isSpectator() && getSquaredDistance(pos, player) < 16384.0D) {
                 return false;

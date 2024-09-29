@@ -3,10 +3,7 @@ package me.jellysquid.mods.lithium.mixin.ai.raid;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.village.raid.Raid;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -18,12 +15,13 @@ public abstract class RaidMixin {
     private ServerBossBar bar;
 
     @Shadow
-    public abstract float getCurrentRaiderHealth();
-
-    @Shadow
     private float totalHealth;
 
+    @Unique
     private boolean isBarDirty;
+
+    @Shadow
+    public abstract float getCurrentRaiderHealth();
 
     /**
      * Check if an update was queued for the bar, and if so, perform an update
