@@ -3,7 +3,7 @@
   "id": "lithium",
   "version": "${version}",
   "name": "Lithium 1.16.1 Backport",
-  "description": "Lithium is a free and open-source optimization mod for Minecraft which makes a wide range of performance improvements to the game.\nThis is an unofficial backport of JellySquid and 2No2Name's original mod.",
+  "description": "Lithium is a free and open-source optimization mod for Minecraft which makes a wide range of performance improvements to the game. This is an unofficial backport of JellySquid and 2No2Name's original mod.",
   "authors": [
     "JellySquid",
     "2No2Name",
