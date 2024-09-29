@@ -4,11 +4,7 @@ import me.jellysquid.mods.lithium.common.util.collections.MaskedTickingBlockEnti
 import me.jellysquid.mods.lithium.common.world.blockentity.BlockEntitySleepTracker;
 import me.jellysquid.mods.lithium.common.world.blockentity.SleepingBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,7 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Allows block entities to sleep.

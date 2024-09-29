@@ -1,7 +1,6 @@
 package me.jellysquid.mods.lithium.mixin.entity.data_tracker.no_locks;
 
 import me.jellysquid.mods.lithium.common.util.lock.NullReadWriteLock;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.data.DataTracker;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

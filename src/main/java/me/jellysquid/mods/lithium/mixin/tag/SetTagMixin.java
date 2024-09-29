@@ -1,6 +1,5 @@
 package me.jellysquid.mods.lithium.mixin.tag;
 
-import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import net.minecraft.tag.SetTag;

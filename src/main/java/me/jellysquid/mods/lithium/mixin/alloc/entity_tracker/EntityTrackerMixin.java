@@ -1,7 +1,6 @@
 package me.jellysquid.mods.lithium.mixin.alloc.entity_tracker;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import org.spongepowered.asm.mixin.Final;

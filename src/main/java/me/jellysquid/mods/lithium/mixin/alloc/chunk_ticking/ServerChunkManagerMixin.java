@@ -11,7 +11,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
-import java.util.function.BooleanSupplier;
 
 @Mixin(ServerChunkManager.class)
 public abstract class ServerChunkManagerMixin {
