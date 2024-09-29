@@ -9,6 +9,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.PalettedContainer;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -27,8 +28,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ChunkSection.class)
 public abstract class ChunkSectionMixin implements ChunkAwareBlockCollisionSweeper.OversizedBlocksCounter {
     @Shadow
-    public abstract void calculateCounts();
-
+    @Final
+    private PalettedContainer<BlockState> container;
     @Unique
     private short oversizedBlockCount;
 
@@ -90,11 +91,15 @@ public abstract class ChunkSectionMixin implements ChunkAwareBlockCollisionSweep
 
     /**
      * Initialize oversized block count in the client worlds.
-     * This also initializes other values (randomtickable blocks counter), but they are unused in the client worlds.
      */
     @Environment(EnvType.CLIENT)
     @Inject(method = "fromPacket", at = @At("RETURN"))
-    private void initCounts(CallbackInfo ci) {
-        this.calculateCounts();
+    private void initOversizedBlockCounts(CallbackInfo ci) {
+        this.oversizedBlockCount = 0;
+        this.container.count((state, count) -> {
+            if (state.exceedsCube()) {
+                this.oversizedBlockCount += (short) count;
+            }
+        });
     }
 }
