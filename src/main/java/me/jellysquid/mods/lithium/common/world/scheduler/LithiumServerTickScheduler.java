@@ -56,7 +56,7 @@ import java.util.function.Predicate;
  * - selected for execution
  *      stored in collection {@link #executingTicks}, not marked as consumed
  *      {@link #isTicking(BlockPos, Object)} returns true
- *
+ * <p>
  * - executing or done executing
  *      stored in collection {@link #executingTicks} but marked as consumed
  *      {@link #isTicking(BlockPos, Object)} returns false
@@ -64,7 +64,7 @@ import java.util.function.Predicate;
 public class LithiumServerTickScheduler<T> extends ServerTickScheduler<T> {
     //These two collections store the same ScheduledTicks and must stay consistent
     private final Long2ObjectSortedMap<TickEntryQueue<T>> scheduledTicksOrdered = new Long2ObjectAVLTreeMap<>();
-    private final ObjectOpenHashSet<TickEntry<T>> scheduledTicks = new ObjectOpenHashSet<>();
+    private final ObjectOpenHashSet<TickEntry<T>> scheduledTicks = new ObjectOpenHashSet<>(1024);
 
     //These two collections store the same ScheduledTicks and must stay consistent
     private final ArrayList<TickEntry<T>> executingTicks = new ArrayList<>();
@@ -73,6 +73,8 @@ public class LithiumServerTickScheduler<T> extends ServerTickScheduler<T> {
     private final Predicate<T> invalidObjPredicate;
     private final ServerWorld world;
     private final Consumer<ScheduledTick<T>> tickConsumer;
+
+    private boolean firstTick = true;
 
     public LithiumServerTickScheduler(ServerWorld world, Predicate<T> invalidPredicate, Function<T, Identifier> idToName, Consumer<ScheduledTick<T>> tickConsumer) {
         super(world, invalidPredicate, idToName, tickConsumer);
@@ -91,6 +93,15 @@ public class LithiumServerTickScheduler<T> extends ServerTickScheduler<T> {
         this.world.getProfiler().swap("executing");
 
         this.executeTicks(this.tickConsumer);
+
+        if (this.firstTick) {
+            // a lot of ticks are scheduled on world creation,
+            // so we trim the sets to avoid keeping around a huge allocation
+            this.scheduledTicks.trim(1024);
+            this.executingTicks.trimToSize();
+            this.executingTicksSet.trim();
+            this.firstTick = false;
+        }
 
         this.world.getProfiler().pop();
     }
