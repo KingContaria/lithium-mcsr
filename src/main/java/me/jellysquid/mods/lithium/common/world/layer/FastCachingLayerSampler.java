@@ -6,22 +6,18 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.layer.util.CachingLayerSampler;
 import net.minecraft.world.biome.layer.util.LayerOperator;
 
-import java.util.Arrays;
-
 /**
  * A much faster implementation of CachingLayerSampler which implements a fixed-size "lossy" cache.
  * This is where the main advantage in this implementation comes from: being lossy, the cache does not have to
  * clean up old entries, it does not ever have to reallocate, and the cached value will always be in the first place
  * it checks.
  * <p>
- * It is important to note however that this is not thread-safe: accessing it from multiple threads can result in wrong
- * values being returned. This implementation works in complement with a patch to the BiomeLayerSampler that initializes
- * the biome layer stack within a thread-local
+ * This is a thread-safe version of Gegy's initial implementation, using an array of Entry objects.
+ * Because of this we no longer need to use ThreadLocals, greatly reducing memory usage especially with SeedQueue,
+ * where the increased number of worker threads also lead to an increased amount of FastCachingLayerSamplers.
  */
 public final class FastCachingLayerSampler extends CachingLayerSampler {
-    private final long[] keys;
-    private final int[] values;
-
+    private final Entry[] cache;
     private final int mask;
 
     public FastCachingLayerSampler(int capacity, LayerOperator operator) {
@@ -30,9 +26,7 @@ public final class FastCachingLayerSampler extends CachingLayerSampler {
         capacity = MathHelper.smallestEncompassingPowerOfTwo(capacity);
         this.mask = capacity - 1;
 
-        this.keys = new long[capacity];
-        Arrays.fill(this.keys, Long.MIN_VALUE);
-        this.values = new int[capacity];
+        this.cache = new Entry[capacity];
     }
 
     @Override
@@ -40,16 +34,15 @@ public final class FastCachingLayerSampler extends CachingLayerSampler {
         long key = key(x, z);
         int idx = hash(key) & this.mask;
 
+        Entry entry = this.cache[idx];
         // if the entry here has a key that matches ours, we have a cache hit
-        if (this.keys[idx] == key) {
-            return this.values[idx];
+        if (entry != null && entry.key == key) {
+            return entry.value;
         }
 
         // cache miss: sample the operator and put the result into our cache entry
         int sampled = this.operator.apply(x, z);
-        this.values[idx] = sampled;
-        this.keys[idx] = key;
-
+        this.cache[idx] = new Entry(key, sampled);
         return sampled;
     }
 
@@ -60,4 +53,15 @@ public final class FastCachingLayerSampler extends CachingLayerSampler {
     private static long key(int x, int z) {
         return ChunkPos.toLong(x, z);
     }
+
+    private static class Entry {
+        private final long key;
+        private final int value;
+
+        private Entry(long key, int value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
 }
+
