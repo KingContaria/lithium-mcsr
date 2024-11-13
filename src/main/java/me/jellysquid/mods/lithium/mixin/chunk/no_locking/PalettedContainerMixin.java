@@ -1,8 +1,13 @@
 package me.jellysquid.mods.lithium.mixin.chunk.no_locking;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.world.chunk.PalettedContainer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.injection.At;
+
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * The implementation of {@link PalettedContainer} performs a strange check to catch concurrent modification and throws
@@ -21,6 +26,18 @@ import org.spongepowered.asm.mixin.Overwrite;
  */
 @Mixin(PalettedContainer.class)
 public abstract class PalettedContainerMixin {
+
+    @WrapOperation(
+            method = "<init>",
+            at = @At(
+                    value = "NEW",
+                    target = "()Ljava/util/concurrent/locks/ReentrantLock;"
+            )
+    )
+    private ReentrantLock noLock(Operation<ReentrantLock> original) {
+        return null;
+    }
+
     /**
      * @reason Do not check the container's lock
      * @author JellySquid
