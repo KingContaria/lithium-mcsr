@@ -16,7 +16,7 @@ public abstract class LivingEntityMixin {
      * @reason Avoid cloning enum values
      */
     @Redirect(
-            method = "method_30129",
+            method = "getEquipmentChanges",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/entity/EquipmentSlot;values()[Lnet/minecraft/entity/EquipmentSlot;"

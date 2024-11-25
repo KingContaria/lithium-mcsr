@@ -24,7 +24,7 @@ public abstract class EntityMixin {
             method = "move",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/World;method_29556(Lnet/minecraft/util/math/Box;)Ljava/util/stream/Stream;"
+                    target = "Lnet/minecraft/world/World;getStatesInBoxIfLoaded(Lnet/minecraft/util/math/Box;)Ljava/util/stream/Stream;"
             )
     )
     private Stream<BlockState> skipFireTestIfResultDoesNotMatter(World world, Box box, Operation<Stream<BlockState>> original) {

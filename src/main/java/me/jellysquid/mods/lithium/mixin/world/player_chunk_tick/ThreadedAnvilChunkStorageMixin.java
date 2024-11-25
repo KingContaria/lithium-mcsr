@@ -39,7 +39,7 @@ public abstract class ThreadedAnvilChunkStorageMixin {
     protected abstract boolean doesNotGenerateChunks(ServerPlayerEntity player);
 
     @Shadow
-    protected abstract ChunkSectionPos method_20726(ServerPlayerEntity serverPlayerEntity);
+    protected abstract ChunkSectionPos updateWatchedSection(ServerPlayerEntity serverPlayerEntity);
 
     @Shadow
     protected abstract ChunkHolder getChunkHolder(long pos);
@@ -70,7 +70,7 @@ public abstract class ThreadedAnvilChunkStorageMixin {
 
         if (movedSections || isWatchingWorld != doesNotGenerateChunks) {
             // Notify the client that the chunk map origin has changed. This must happen before any chunk payloads are sent.
-            this.method_20726(player);
+            this.updateWatchedSection(player);
 
             if (!isWatchingWorld) {
                 this.ticketManager.handleChunkLeave(oldPos, player);

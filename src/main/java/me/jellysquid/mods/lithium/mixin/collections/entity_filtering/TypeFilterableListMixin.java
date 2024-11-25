@@ -63,7 +63,7 @@ public abstract class TypeFilterableListMixin<T> {
      * @reason Do not copy the list every call to provide immutability, instead wrap with an unmodifiable type
      */
     @Overwrite
-    public List<T> method_29903() {
+    public List<T> getAllElements() {
         return Collections.unmodifiableList(this.allElements);
     }
 }

@@ -74,7 +74,7 @@ public abstract class RedstoneWireBlockMixin extends Block {
     }
     
     @Inject(
-            method = "method_27842",
+            method = "getReceivedRedstonePower",
             at = @At("HEAD"),
             cancellable = true
     )

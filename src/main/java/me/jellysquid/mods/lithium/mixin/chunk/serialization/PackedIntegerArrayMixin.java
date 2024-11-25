@@ -30,7 +30,7 @@ public abstract class PackedIntegerArrayMixin implements CompactingPackedInteger
 
     @Shadow
     @Final
-    private int field_24079;
+    private int elementsPerLong;
 
     @Override
     public <T> void lithium$compact(Palette<T> srcPalette, Palette<T> dstPalette, short[] out) {
@@ -49,7 +49,7 @@ public abstract class PackedIntegerArrayMixin implements CompactingPackedInteger
         for (long word : this.storage) {
             long bits = word;
 
-            for (int elementIdx = 0; elementIdx < this.field_24079; ++elementIdx) {
+            for (int elementIdx = 0; elementIdx < this.elementsPerLong; ++elementIdx) {
                 int value = (int) (bits & this.maxValue);
                 int remappedId = mappings[value];
 
