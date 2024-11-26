@@ -34,10 +34,10 @@ public abstract class SurfaceChunkGeneratorMixin {
             method = "<init>(Lnet/minecraft/world/biome/source/BiomeSource;Lnet/minecraft/world/biome/source/BiomeSource;JLnet/minecraft/world/gen/chunk/ChunkGeneratorType;)V",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/gen/chunk/ChunkGeneratorType;method_28559()Lnet/minecraft/world/gen/chunk/NoiseConfig;"
+                    target = "Lnet/minecraft/world/gen/chunk/ChunkGeneratorType;getGenerationShapeConfig()Lnet/minecraft/world/gen/chunk/NoiseConfig;"
             )
     )
     private void hookConstructor(BiomeSource populationSource, BiomeSource biomeSource, long seed, ChunkGeneratorType settings, CallbackInfo ci) {
-        this.cachedSeaLevel = settings.method_28561();
+        this.cachedSeaLevel = settings.getSeaLevel();
     }
 }

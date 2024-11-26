@@ -23,10 +23,11 @@ public abstract class EntityShapeContextMixin {
     @Shadow
     @Final
     private Item heldItem;
+
     @Mutable
     @Shadow
     @Final
-    private Predicate<Fluid> field_24425;
+    private Predicate<Fluid> walkOnFluidPredicate;
 
     @Unique
     private Entity lithium_entity;
@@ -61,7 +62,7 @@ public abstract class EntityShapeContextMixin {
     )
     private void initFields(Entity entity, CallbackInfo ci) {
         this.heldItem = null;
-        this.field_24425 = null;
+        this.walkOnFluidPredicate = null;
         this.lithium_entity = entity;
     }
 
@@ -82,7 +83,7 @@ public abstract class EntityShapeContextMixin {
      * @reason allow skipping unused lambda allocation
      */
     @Overwrite
-    public boolean method_27866(FluidState aboveState, FlowableFluid fluid) {
+    public boolean canWalkOnFluid(FluidState aboveState, FlowableFluid fluid) {
         return this.lithium_entity instanceof LivingEntity && ((LivingEntity) this.lithium_entity).canWalkOnFluid(fluid) && !aboveState.getFluid().matchesType(fluid);
     }
 }

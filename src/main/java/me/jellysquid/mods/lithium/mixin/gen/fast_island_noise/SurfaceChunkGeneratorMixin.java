@@ -18,14 +18,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class SurfaceChunkGeneratorMixin {
     @Shadow
     @Final
-    private SimplexNoiseSampler field_24777;
+    private SimplexNoiseSampler islandNoise;
 
     @Unique
     private ThreadLocal<SimplexNoiseCache> tlCache;
 
     @Inject(method = "<init>(Lnet/minecraft/world/biome/source/BiomeSource;Lnet/minecraft/world/biome/source/BiomeSource;JLnet/minecraft/world/gen/chunk/ChunkGeneratorType;)V", at = @At("RETURN"))
     private void hookConstructor(BiomeSource biomeSource, BiomeSource biomeSource2, long l, ChunkGeneratorType chunkGeneratorType, CallbackInfo ci) {
-        this.tlCache = ThreadLocal.withInitial(() -> new SimplexNoiseCache(this.field_24777));
+        this.tlCache = ThreadLocal.withInitial(() -> new SimplexNoiseCache(this.islandNoise));
     }
 
     /**
