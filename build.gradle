@@ -13,7 +13,7 @@ loom {
 apply plugin: 'fabric-loom'
 
 group = project.maven_group
-version = "${project.mcsr_version}+backport-${project.lithium_version}+${project.minecraft_version}"
+version = "${project.mod_version}+${project.target_version}-backport-${project.backport_version}"
 base {
     archivesName = project.archives_base_name
 }
